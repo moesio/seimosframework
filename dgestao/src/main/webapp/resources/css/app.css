@@ -1,0 +1,89 @@
+/*
+With a little help of dabblet.com, paletton.com, colorzilla.com
+*/
+body,div,h1,h2,h3,h4,h5,h6,p,ul,ol,li,dl,dt,dd,img,form,fieldset,input,textarea,blockquote
+	{
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: Helvetica, sans-serif;
+	background: -moz-linear-gradient(top, #ffdd6e 0%, #ffffff 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #ffdd6e),
+		color-stop(100%, #ffffff));
+	background: -webkit-linear-gradient(top, #ffdd6e 0%, #ffffff 100%);
+	background: -o-linear-gradient(top, #ffdd6e 0%, #ffffff 100%);
+	background: -ms-linear-gradient(top, #ffdd6e 0%, #ffffff 100%);
+	background: linear-gradient(to bottom, #ffdd6e 0%, #ffffff 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(      startColorstr='#ffdd6e',
+		endColorstr='#ffffff', GradientType=0);
+	color: #5889b8;
+}
+
+header {
+	white-space: nowrap;
+	position: fixed;
+	margin: 0 auto;
+	top: 0;
+	background-color: #adceed;
+	width: 100%;
+	max-width: 960px;
+	left: 0;
+	right: 0;
+	z-index: 1;
+	-webkit-border-radius: 0 0 15px 15px;
+	border-radius: 0 0 15px 15px;
+	box-shadow: 0px 0px 30px 1px #999
+}
+
+header h1 {
+	padding: 5px;
+	color: #5889b8;
+}
+
+nav#breadcrumb {
+	padding: 2px 5px;
+	background-color: #ffc46e;
+}
+
+nav#breadcrumb a {
+	color: #5889b8;
+}
+
+section#main {
+	width: 100%;
+	max-width: 960px;
+	margin: 140px auto 20px auto;
+	background-color: #daebfa;
+	min-height: calc(100vh - 160px);
+	padding: 10px;
+	box-sizing: border-box;
+	-webkit-border-radius: 10px 10px 0px 0px;
+	border-radius: 10px 10px 0px 0px;
+	box-shadow: 0px 0px 30px 1px #999;
+}
+
+footer {
+	color: #fff;
+	bottom: 0px;
+	position: fixed;
+	width: 100%;
+	text-align: center;
+	font-size: 8pt;
+	background-color: #81BADE;
+	margin: 0;
+	padding: 0;
+}
+
+table.grid {
+	width: 100%;
+}
+
+table.grid td {
+	padding: 5px;
+	border:  1px solid #ccc;
+}
+
+table.grid td:last-child {
+}
