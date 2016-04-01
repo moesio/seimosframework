@@ -39,7 +39,7 @@
 							</#if>
 						</#list>
 						<td>
-							<a href="edit/${item["id"]}">Editar</a> <a href="remove/${item["id"]}">Excluir</a>
+							<a href="edit/${item["id"]}">Editar</a> <a onClick="removal(${item['id']}, this)">Excluir</a>
 						</td>
             		</tr>
 					</#list>

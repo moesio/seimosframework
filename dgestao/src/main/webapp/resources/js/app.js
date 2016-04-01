@@ -3,7 +3,7 @@
 
 	var app = angular.module('programacao', [ 'ui.bootstrap' ]);
 
-	var context = "..";
+	var context = "../";
 
 	$(this).ready(
 			function() {
@@ -23,7 +23,7 @@
 
 					$.ajax({
 						type : "GET",
-						url : context + "/" + entity + "/tinyList",
+						url : context + entity + "/tinyList",
 						contentType : "application/json; charset=utf-8",
 						dataType : "json",
 						success : function(data) {
@@ -31,7 +31,7 @@
 						}
 					}).error(error);
 				});
-
+				
 			});
 
 	var breadcrumbClick = function() {
@@ -57,6 +57,34 @@
 		}
 	};
 
+	var error = function(data) {
+		console.log(JSON.stringify(data));
+		console.log(data.statusText);
+	}
+
+	var populateSelect = function(select, data) {
+		$.each(data, function(index, option) {
+			select.append($("<option>", {
+				value : option.value,
+				text : option.text
+			}));
+			// console.log(JSON.stringify(option.label));
+		});
+	}
+
+	window.removal = function(id, element) {
+		$.ajax({
+			type : "DELETE",
+			url : "remove/" + id,
+			contentType : "application/json; charset=utf-8",
+			dataType : "json",
+			success : function(data) {
+				console.log('Removeu ' + id);
+				$(element).closest('tr').remove();
+			}
+		}).error(error).fail(error);
+	}
+	
 	window.submitForm = function(element) {
 		var form;
 		if (element.is('form')) {
@@ -84,31 +112,16 @@
 
 		$.ajax({
 			type : "POST",
-			url : "createAjax",
+			url : context + "createAjax",
 			contentType : "application/json; charset=utf-8",
 			dataType : "json",
 			 data : JSON.stringify(formSerializedResult),
 //			data : $.param($('form').serializeArray()),
 			success : function(data) {
-				alert('Com sucesso!');
-				form.find('input[type="reset"]').click();
+				console.log('Com sucesso!');
+				//form.find('button[type="reset"]').click();
 			}
 		}).error(error).fail(error);
-	}
-
-	var error = function(data) {
-		console.log(JSON.stringify(data));
-		alert(data.statusText);
-	}
-
-	var populateSelect = function(select, data) {
-		$.each(data, function(index, option) {
-			select.append($("<option>", {
-				value : option.value,
-				text : option.text
-			}));
-			// console.log(JSON.stringify(option.label));
-		});
 	}
 
 })();

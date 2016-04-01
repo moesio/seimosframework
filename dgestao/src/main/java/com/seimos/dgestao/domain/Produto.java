@@ -19,11 +19,11 @@ public class Produto {
 	private Integer id;
 	@ManyToOne
 	private Genero genero;
-	@Column(nullable = false, length = 50)
+	@Column(nullable = false, length = 5)
 	private String codigo;
-	@Column(nullable = false, length = 250)
+	@Column(nullable = false, length = 50)
 	private String nome;
-	@Column(nullable = true, length = 4)
+	@Column(nullable = true, length = 3)
 	private Integer validadeAposAberto;
 	@Column(nullable = true, length = 5 * 1024)
 	private String imagem;

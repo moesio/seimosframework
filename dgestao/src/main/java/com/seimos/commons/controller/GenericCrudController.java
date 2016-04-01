@@ -1,5 +1,7 @@
 package com.seimos.commons.controller;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,8 +29,8 @@ import com.seimos.commons.hibernate.Filter.Wildcard;
 import com.seimos.commons.hibernate.Filters;
 import com.seimos.commons.reflection.Reflection;
 import com.seimos.commons.service.GenericService;
-import com.seimos.commons.web.formbuilder.SelectOption;
 import com.seimos.commons.web.formbuilder.Page;
+import com.seimos.commons.web.formbuilder.SelectOption;
 
 /**
  * Generic Controller for CRUD encapsulation. Subclasses must be annotated with both
@@ -101,6 +103,25 @@ public abstract class GenericCrudController<Entity> {
 		return StringUtils.uncapitalize(entityClass.getSimpleName());
 	}
 
+	@RequestMapping(value = "/createOrUpdate", method = RequestMethod.POST)
+	@Transactional
+	public ModelAndView createOrUpdate(@ModelAttribute Entity entity, RedirectAttributes redirect) {
+		Field idField = Reflection.getIdField(entityClass);
+		String getter = Reflection.getGetter(idField);
+		try {
+			Method method = entityClass.getMethod(getter);
+			Object id = method.invoke(entity);
+			redirect.addFlashAttribute(entity);
+			if (id == null) {
+				return new ModelAndView("redirect:./create");
+			} else {
+				return new ModelAndView("redirect:./update/".concat(id.toString()));
+			}
+		} catch (Exception e) {
+		}
+		return null;
+	}
+
 	/**
 	 * Creates a new record of type Model. A Model in json format must be sent in body request
 	 * 
@@ -108,17 +129,16 @@ public abstract class GenericCrudController<Entity> {
 	 * @return TRUE - Success / FALSE - Failed
 	 * @throws Exception 
 	 */
-	@RequestMapping(value = "/create", method = RequestMethod.POST)
+	@RequestMapping(value = "/create", method = { RequestMethod.GET, RequestMethod.POST })
 	@Transactional
 	//		@ExceptionHandler
-	public ModelAndView create(@ModelAttribute Entity entity, RedirectAttributes redirect) throws Exception { 
-		// Caso queira submeter direto do formulário, senão causa erro 415
+	public ModelAndView create(@ModelAttribute Entity entity, RedirectAttributes redirect) throws Exception {
 		try {
 			getService().create(entity);
 			redirect.addFlashAttribute(entity);
 			return new ModelAndView("redirect:./grid");
 		} catch (Exception e) {
-			logger.error("Create exception for " + entity, e);
+			logger.error("Create throwns an exception for " + entity, e);
 			throw e;
 		}
 	}
@@ -127,7 +147,16 @@ public abstract class GenericCrudController<Entity> {
 	@Transactional
 	@ResponseBody
 	public Entity createAjax(@RequestBody Entity entity) throws Exception {
-		return getService().create(entity);
+		getService().create(entity);
+		return entity;
+	}
+
+	@RequestMapping(value = "/updateAjax", method = RequestMethod.POST)
+	@Transactional
+	@ResponseBody
+	public Entity updateAjax(@RequestBody Entity entity) throws Exception {
+		getService().update(entity);
+		return entity;
 	}
 
 	/**
@@ -228,14 +257,11 @@ public abstract class GenericCrudController<Entity> {
 	@Transactional(readOnly = true)
 	public String newForm(Model model) {
 		Page page = createPage(model);
-		page.setData("creation");
+//		page.setData("creation");
+		page.addProperty("creation", true);
 		try {
 			model.addAttribute(getEntitySimpleName(), entityClass.newInstance());
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -271,13 +297,14 @@ public abstract class GenericCrudController<Entity> {
 
 	@RequestMapping(value = "/edit/{id}", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
-//	@ResponseBody
+	//	@ResponseBody
 	public String editForm(Model model, @PathVariable Integer id) {
 		createPage(model);
 		Entity entity = getService().findById(id);
 		model.addAttribute(getEntitySimpleName(), entity);
+		model.addAttribute("action", "update");
 		return "edit";
-//		return "<html><body>Ediçasdfasdfasdasdfão " + id + "</body></html>";
+		//		return "<html><body>Ediçasdfasdfasdasdfão " + id + "</body></html>";
 	}
 
 	//	@RequestMapping(value = "/grid", method = RequestMethod.GET)
@@ -305,7 +332,7 @@ public abstract class GenericCrudController<Entity> {
 	 * @param entity
 	 * @return TRUE - Success / FALSE - Failed
 	 */
-	@RequestMapping(value = "/update/{id}", method = RequestMethod.PATCH)
+	@RequestMapping(value = "/update/{id}", method = { RequestMethod.GET, RequestMethod.PATCH })
 	@ResponseBody
 	@Transactional
 	public Boolean update(@RequestBody Entity entity) {

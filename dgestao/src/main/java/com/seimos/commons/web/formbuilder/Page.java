@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.Embedded;
@@ -20,6 +21,7 @@ public class Page implements Serializable {
 	private String title;
 	private List<FormField> formFields;
 	private Object data;
+	private HashMap<String, Object> properties = new HashMap<String, Object>();
 
 	@SuppressWarnings("unused")
 	private Page() {
@@ -80,4 +82,18 @@ public class Page implements Serializable {
 		this.data = data;
 		return this;
 	}
+
+	public HashMap<String, Object> getProperties() {
+		return properties;
+	}
+
+	public Page setProperties(HashMap<String, Object> properties) {
+		this.properties = properties;
+		return this;
+	}
+	
+	public void addProperty(String key, Object value) {
+		properties.put(key, value);
+	}
+	
 }

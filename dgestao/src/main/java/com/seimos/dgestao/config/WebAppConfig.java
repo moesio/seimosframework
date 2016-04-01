@@ -7,15 +7,10 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import org.apache.tomcat.dbcp.dbcp.BasicDataSource;
-import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.orm.hibernate4.HibernateExceptionTranslator;
 import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
@@ -44,6 +39,7 @@ import com.seimos.commons.web.config.ConfigReader;
 //@PropertySource(value = "classpath:config.properties")
 @ComponentScan(basePackages = { "com.seimos.dgestao.controller", "com.seimos.dgestao.service", "com.seimos.dgestao.dao", "com.seimos.commons.web.exception" })
 public class WebAppConfig extends WebMvcConfigurerAdapter {
+	
 	@Bean
 	public ViewResolver contentNegotiatingViewResolver(ContentNegotiationManager manager) {
 		ArrayList<ViewResolver> resolvers = new ArrayList<ViewResolver>();

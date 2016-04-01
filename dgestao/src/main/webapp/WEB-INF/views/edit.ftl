@@ -64,7 +64,7 @@
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane active" id="cadastro">
-                            <form method='post' action='./create'>
+                            <form method='post' action='${page.properties.creation?exists?string('./create', './update')}'>
                             <#-- 
                             enctype="application/json; charset=utf-8"
                             -->
@@ -107,11 +107,12 @@
                                     <div class="col-sm-offset-2 col-sm-10">
                                     <#--
                                     em caso de submissão ajax
+                                    	<button type="button" class="btn btn-primary" onclick="submitForm($(this))"><@spring.message "form.button.save"/></button>
                                     -->
-                                    	<input type="button" class="btn btn-primary" value="<@spring.message "form.button.save"/>" onclick="submitForm($(this))"/>
-                                    <#--
                                     	<input type="submit" class="btn btn-primary" value="<@spring.message "form.button.save"/>"/>
+                                    <#--
                                     -->
+                                    <button type="reset" class="btn btn-default"><@spring.message "form.button.clean"/></button>
                                     </div>
                                 </div>
                             </form>

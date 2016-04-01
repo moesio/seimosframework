@@ -19,6 +19,9 @@ public class Genero {
 	private Integer id;
 	@Column(length = 50, nullable = false)
 	private String nome;
+	
+//	public Genero() {
+//	}
 
 	public Integer getId() {
 		return id;
@@ -42,6 +45,28 @@ public class Genero {
 	public String toString() {
 		return id + " - " + nome;
 	}
-	
-	
+
+//	public static class Builder {
+//		private Integer id;
+//		private String nome;
+//
+//		public Builder id(Integer id) {
+//			this.id = id;
+//			return this;
+//		}
+//
+//		public Builder nome(String nome) {
+//			this.nome = nome;
+//			return this;
+//		}
+//
+//		public Genero build() {
+//			return new Genero(this);
+//		}
+//	}
+//
+//	private Genero(Builder builder) {
+//		this.id = builder.id;
+//		this.nome = builder.nome;
+//	}
 }
