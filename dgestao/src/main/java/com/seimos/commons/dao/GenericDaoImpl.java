@@ -756,7 +756,7 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 	public Domain findById(Object id) {
 
 		Filters filters = new Filters();
-		filters.add(new Filter("*", Wildcard.YES));
+		filters.add(new Filter("*"));
 
 		Field[] fields = getEntityClass().getDeclaredFields();
 

@@ -82,4 +82,10 @@ public class Produto {
 		return this;
 	}
 
+	@Override
+	public String toString() {
+		return "Produto [genero=" + genero + ", codigo=" + codigo + ", nome=" + nome + "]";
+	}
+
+	
 }

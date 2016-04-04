@@ -2,15 +2,22 @@ package com.seimos.commons.web.formbuilder;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.ContextLoader;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.seimos.commons.reflection.Reflection;
+import com.seimos.commons.service.GenericService;
+import com.seimos.dgestao.domain.Genero;
+import com.seimos.dgestao.service.GeneroService;
 
 /**
  * @author moesio @ gmail.com
@@ -22,37 +29,40 @@ public class FormField implements Serializable {
 	private String name;
 	private Integer length;
 	private Boolean nullable;
+	private LinkedHashMap<String, String> populator;
+	private String idFieldName;
 
 	public enum T {
 		TEXT, INTEGER, SELECT, HIDDEN, BOOLEAN;
 
-		private String reference;
-		private List<?> list;
-		private String idFieldName;
-
-		public String getReference() {
-			return reference;
-		}
-
-		public void setReference(String string) {
-			this.reference = string;
-		}
-
-		public List<?> getList() {
-			return list;
-		}
-
-		public void setList(List<?> list) {
-			this.list = list;
-		}
-		
-		public String getIdFieldName() {
-			return idFieldName;
-		}
-
-		public void setIdFieldName(String idFieldName) {
-			this.idFieldName = idFieldName;
-		}
+//		private String reference;
+//		private LinkedHashMap<String, String> map;
+//		private String idFieldName;
+//
+//		public String getReference() {
+//			return reference;
+//		}
+//
+//		public void setReference(String string) {
+//			this.reference = string;
+//		}
+//
+//		public String getIdFieldName() {
+//			return idFieldName;
+//		}
+//
+//		public void setIdFieldName(String idFieldName) {
+//			this.idFieldName = idFieldName;
+//		}
+//
+//		public LinkedHashMap<String, String> getMap() {
+//			return map;
+//		}
+//
+//		public void setMap(LinkedHashMap<String, String> map) {
+//			this.map = map;
+//		}
+//
 	}
 
 	@SuppressWarnings("unused")
@@ -85,9 +95,16 @@ public class FormField implements Serializable {
 		Class<?> fieldType = field.getType();
 		if (field.isAnnotationPresent(ManyToOne.class)) {
 			type = T.SELECT;
-			type.setReference(StringUtils.uncapitalize(field.getType().getSimpleName()));
-			type.setIdFieldName(Reflection.getIdField(field.getType()).getName());
-//			WebApplicationContext webContext = ContextLoader.getCurrentWebApplicationContext();
+			idFieldName = Reflection.getIdField(field.getType()).getName();
+			populator = new LinkedHashMap<String, String>();
+			
+			WebApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
+			GenericService<?> service = (GenericService<?>) context.getBean(StringUtils.uncapitalize(field.getType().getSimpleName()).concat("ServiceImpl"));
+			ArrayList<SelectOption> tinyList = service.tinyList();
+			
+			for (SelectOption option : tinyList) {
+				populator.put(option.getValue(), option.getText());
+			}
 		} else if (field.isAnnotationPresent(Id.class)) {
 			type = T.HIDDEN;
 		} else {
@@ -150,4 +167,27 @@ public class FormField implements Serializable {
 		return this;
 	}
 
+
+	public LinkedHashMap<String, String> getPopulator() {
+		return populator;
+	}
+
+	public FormField setPopulator(LinkedHashMap<String, String> populator) {
+		this.populator = populator;
+		return this;
+	}
+
+	public String getIdFieldName() {
+		return idFieldName;
+	}
+
+	public FormField setIdFieldName(String idFieldName) {
+		this.idFieldName = idFieldName;
+		return this;
+	}
+	
+	@Override
+	public String toString() {
+		return "FormField [type=" + type + ", label=" + label + ", name=" + name + ", length=" + length + ", nullable=" + nullable + "]";
+	}
 }

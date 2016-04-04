@@ -5,7 +5,7 @@
 	<#assign label>
 		<@spring.messageText "${field.label}.select.label" ""/><#t>
 	</#assign>
-	<select class="form-control">
+	&lt;select class="form-control"&gt;<br/>
 	<#if field.type.list?exists>
 		<#list field.type.list as item>
 			<#if label?index_of("+") gt 0>
@@ -23,13 +23,14 @@
 					</#if>
 				</#list>
 				</#compress>
-				<option value="${item["${value}"]!}">${newLabel!}</option>
+				option value="${item["${value}"]!}" ${newLabel!}1</option
 			<#else>
-	    		<option value="${item["${value}"]!}">${item["${label}"]!"${field.label}.select.label"}</option>
+				${field.label}
+	    		&lt;option value="${item.id}"&gt;${item["nome"]}&lt;/option&gt;<br/>
 			</#if>
 		</#list>
 	</#if>
-	</select>
+	&lt;/select&gt;
 </#macro>
 
 <#macro selectForFixedDomain field>
@@ -64,7 +65,7 @@
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane active" id="cadastro">
-                            <form method='post' action='${page.properties.creation?exists?string('./create', './update')}'>
+                            <form method='post' action='${page.properties.creation?exists?then('./create', './update')}'>
                             <#-- 
                             enctype="application/json; charset=utf-8"
                             -->
@@ -93,17 +94,18 @@
 										<#case "SELECT">
                                         <div class="form-group">
                                             <label class="col-sm-2 text-right control-label"><@spring.messageText "${field.label}" "${field.label}"/></label>
-                                            <div class="col-sm-10">
+		                                    <div class="col-sm-10">
                                             <#--
                                         		<@selectForField field=field/>
-                                            -->
 											<@spring.formSingleSelect "${field.name}.${field.type.idFieldName}" {} "class='form-control' aria-populate='${field.type.reference}'"/><#t>
+                                            -->
+											<@spring.formSingleSelect "${field.name}.${field.idFieldName}" field.populator "class='form-control'"/><#t>
 	                                        </div>
                                         </div>
 								    	<#break>
                                 	</#switch>
 								</#list>
-                                <div class="form-group">
+	                            <div class="form-group">
                                     <div class="col-sm-offset-2 col-sm-10">
                                     <#--
                                     em caso de submissão ajax

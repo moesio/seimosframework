@@ -20,9 +20,6 @@ public class Genero {
 	@Column(length = 50, nullable = false)
 	private String nome;
 	
-//	public Genero() {
-//	}
-
 	public Integer getId() {
 		return id;
 	}
@@ -43,8 +40,9 @@ public class Genero {
 
 	@Override
 	public String toString() {
-		return id + " - " + nome;
+		return "Genero [id=" + id + ", nome=" + nome + "]";
 	}
+
 
 //	public static class Builder {
 //		private Integer id;

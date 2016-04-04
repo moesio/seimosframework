@@ -273,13 +273,11 @@ public class Filter {
 		throw new Exception("O Filter deve ter pelo menos uma definição do atributo. Use Filter(String attribute)");
 	}
 
-	public Filter(String attribute, Wildcard wildcard) {
-		setAttribute(attribute);
-		setWildcard(wildcard);
-	}
-
 	public Filter(String attribute) {
 		setAttribute(attribute);
+		if (attribute.contains("*")) {
+			setWildcard(Wildcard.YES);
+		}
 	}
 
 	public Filter(String attribute, Object value) {

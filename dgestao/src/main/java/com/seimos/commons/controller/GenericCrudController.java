@@ -1,16 +1,12 @@
 package com.seimos.commons.controller;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -25,9 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.seimos.commons.hibernate.Filter;
-import com.seimos.commons.hibernate.Filter.Wildcard;
 import com.seimos.commons.hibernate.Filters;
-import com.seimos.commons.reflection.Reflection;
 import com.seimos.commons.service.GenericService;
 import com.seimos.commons.web.formbuilder.Page;
 import com.seimos.commons.web.formbuilder.SelectOption;
@@ -63,7 +57,6 @@ public abstract class GenericCrudController<Entity> {
 	private HashMap<Class<?>, Page> formCache = new HashMap<Class<?>, Page>();
 	private Class<Entity> entityClass;
 	public Environment env;
-	private ReloadableResourceBundleMessageSource messageSource;
 
 	public abstract GenericService<Entity> getService();
 
@@ -75,11 +68,6 @@ public abstract class GenericCrudController<Entity> {
 	@Autowired
 	public void setEnv(Environment env) {
 		this.env = env;
-	}
-
-	@Autowired
-	public void setMessageSource(ReloadableResourceBundleMessageSource messageSource) {
-		this.messageSource = messageSource;
 	}
 
 	private Page createPage(Model model) {
@@ -103,25 +91,6 @@ public abstract class GenericCrudController<Entity> {
 		return StringUtils.uncapitalize(entityClass.getSimpleName());
 	}
 
-	@RequestMapping(value = "/createOrUpdate", method = RequestMethod.POST)
-	@Transactional
-	public ModelAndView createOrUpdate(@ModelAttribute Entity entity, RedirectAttributes redirect) {
-		Field idField = Reflection.getIdField(entityClass);
-		String getter = Reflection.getGetter(idField);
-		try {
-			Method method = entityClass.getMethod(getter);
-			Object id = method.invoke(entity);
-			redirect.addFlashAttribute(entity);
-			if (id == null) {
-				return new ModelAndView("redirect:./create");
-			} else {
-				return new ModelAndView("redirect:./update/".concat(id.toString()));
-			}
-		} catch (Exception e) {
-		}
-		return null;
-	}
-
 	/**
 	 * Creates a new record of type Model. A Model in json format must be sent in body request
 	 * 
@@ -129,7 +98,7 @@ public abstract class GenericCrudController<Entity> {
 	 * @return TRUE - Success / FALSE - Failed
 	 * @throws Exception 
 	 */
-	@RequestMapping(value = "/create", method = { RequestMethod.GET, RequestMethod.POST })
+	@RequestMapping(value = "/create", method = RequestMethod.POST )
 	@Transactional
 	//		@ExceptionHandler
 	public ModelAndView create(@ModelAttribute Entity entity, RedirectAttributes redirect) throws Exception {
@@ -203,61 +172,14 @@ public abstract class GenericCrudController<Entity> {
 	@ResponseBody
 	@Transactional(readOnly = true)
 	public List<SelectOption> tinyList() {
-
-		String entityName = getEntitySimpleName();
-		String value = messageSource.getMessage(entityName.concat(".tinyList.value"), null, null, null);
-		String label = messageSource.getMessage(entityName.concat(".tinyList.label"), null, null, null);
-
-		StringBuilder newLabel;
-		Filters filters = new Filters();
-
-		if (value == null) {
-			value = Reflection.getIdField(entityClass).getName();
-		}
-		filters.add(new Filter(value));
-
-		if (label == null) {
-			filters.add(new Filter("*", Wildcard.YES));
-		} else {
-			String[] split = label.split("\\+");
-			for (String labelComponent : split) {
-				if (!labelComponent.contains("\"") && !labelComponent.contains("\'")) {
-					filters.add(new Filter(labelComponent.trim()));
-				}
-			}
-		}
-
-		ArrayList<SelectOption> options = new ArrayList<SelectOption>();
-		List<Entity> list = getService().find(filters);
-		SelectOption selectOption;
-		for (Entity item : list) {
-			selectOption = new SelectOption().setValue(Reflection.invoke(item, value).toString());
-
-			if (label == null) {
-				selectOption.setText(item.toString());
-			} else {
-				newLabel = new StringBuilder();
-				String[] split = label.split("\\+");
-				for (String labelComponent : split) {
-					if (labelComponent.contains("\"") || labelComponent.contains("\'")) {
-						newLabel.append(labelComponent.replace("\"", "").replace("\'", ""));
-					} else {
-						newLabel.append(Reflection.invoke(item, labelComponent.trim()));
-					}
-				}
-				selectOption.setText(newLabel.toString());
-			}
-			options.add(selectOption);
-		}
-
-		return options;
+		return getService().tinyList();
 	}
+
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
 	public String newForm(Model model) {
 		Page page = createPage(model);
-//		page.setData("creation");
 		page.addProperty("creation", true);
 		try {
 			model.addAttribute(getEntitySimpleName(), entityClass.newInstance());
@@ -278,7 +200,7 @@ public abstract class GenericCrudController<Entity> {
 	@ResponseBody
 	@Transactional(readOnly = true)
 	public Entity findByID(@PathVariable Integer id) {
-		Filters filters = new Filters().add(new Filter("id", id)).add(new Filter("*", Wildcard.YES));
+		Filters filters = new Filters().add(new Filter("id", id)).add(new Filter("*"));
 		return getService().findUnique(filters);
 	}
 
@@ -302,7 +224,7 @@ public abstract class GenericCrudController<Entity> {
 		createPage(model);
 		Entity entity = getService().findById(id);
 		model.addAttribute(getEntitySimpleName(), entity);
-		model.addAttribute("action", "update");
+//		model.addAttribute("action", "update");
 		return "edit";
 		//		return "<html><body>Ediçasdfasdfasdasdfão " + id + "</body></html>";
 	}
@@ -332,7 +254,7 @@ public abstract class GenericCrudController<Entity> {
 	 * @param entity
 	 * @return TRUE - Success / FALSE - Failed
 	 */
-	@RequestMapping(value = "/update/{id}", method = { RequestMethod.GET, RequestMethod.PATCH })
+	@RequestMapping(value = "/update/{id}", method = RequestMethod.PATCH)
 	@ResponseBody
 	@Transactional
 	public Boolean update(@RequestBody Entity entity) {
@@ -355,7 +277,6 @@ public abstract class GenericCrudController<Entity> {
 	@ResponseBody
 	@Transactional
 	public Boolean remove(@PathVariable Integer id) {
-
 		try {
 			getService().remove(id);
 			return true;

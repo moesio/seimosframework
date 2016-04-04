@@ -3,7 +3,7 @@
 
 	var app = angular.module('programacao', [ 'ui.bootstrap' ]);
 
-	var context = "../";
+	var context = "/dgestao/";
 
 	$(this).ready(
 			function() {
