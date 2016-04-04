@@ -86,6 +86,4 @@ public class Produto {
 	public String toString() {
 		return "Produto [genero=" + genero + ", codigo=" + codigo + ", nome=" + nome + "]";
 	}
-
-	
 }

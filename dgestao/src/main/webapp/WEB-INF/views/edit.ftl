@@ -6,8 +6,8 @@
 		<@spring.messageText "${field.label}.select.label" ""/><#t>
 	</#assign>
 	&lt;select class="form-control"&gt;<br/>
-	<#if field.type.list?exists>
-		<#list field.type.list as item>
+	<#if field.populator?exists>
+		<#list field.populator as item>
 			<#if label?index_of("+") gt 0>
 				<#assign newLabel = ""/>
 				<#compress>
@@ -65,7 +65,7 @@
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane active" id="cadastro">
-                            <form method='post' action='${page.properties.creation?exists?then('./create', './update')}'>
+                            <form method='post' action='${page.properties.creation?exists?then('./create', '../update')}'>
                             <#-- 
                             enctype="application/json; charset=utf-8"
                             -->

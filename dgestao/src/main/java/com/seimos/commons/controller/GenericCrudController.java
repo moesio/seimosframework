@@ -104,7 +104,7 @@ public abstract class GenericCrudController<Entity> {
 	public ModelAndView create(@ModelAttribute Entity entity, RedirectAttributes redirect) throws Exception {
 		try {
 			getService().create(entity);
-			redirect.addFlashAttribute(entity);
+//			redirect.addFlashAttribute(entity);
 			return new ModelAndView("redirect:./grid");
 		} catch (Exception e) {
 			logger.error("Create throwns an exception for " + entity, e);
@@ -117,14 +117,6 @@ public abstract class GenericCrudController<Entity> {
 	@ResponseBody
 	public Entity createAjax(@RequestBody Entity entity) throws Exception {
 		getService().create(entity);
-		return entity;
-	}
-
-	@RequestMapping(value = "/updateAjax", method = RequestMethod.POST)
-	@Transactional
-	@ResponseBody
-	public Entity updateAjax(@RequestBody Entity entity) throws Exception {
-		getService().update(entity);
 		return entity;
 	}
 
@@ -243,6 +235,7 @@ public abstract class GenericCrudController<Entity> {
 		List<Entity> list = getService().find(entity);
 		createPage(model);
 		model.addAttribute("list", list);
+		model.addAttribute("entity", getEntitySimpleName());
 		return "grid";
 	}
 
@@ -254,17 +247,25 @@ public abstract class GenericCrudController<Entity> {
 	 * @param entity
 	 * @return TRUE - Success / FALSE - Failed
 	 */
-	@RequestMapping(value = "/update/{id}", method = RequestMethod.PATCH)
-	@ResponseBody
+	@RequestMapping(value = "/update", method = RequestMethod.POST)
 	@Transactional
-	public Boolean update(@RequestBody Entity entity) {
+	public ModelAndView update(@ModelAttribute Entity entity, RedirectAttributes redirect) throws Exception {
 		try {
 			getService().update(entity);
+			redirect.addFlashAttribute(entity);
+			return new ModelAndView("redirect:./grid");
 		} catch (Exception e) {
 			logger.error("Update exception for " + entity, e);
-			return false;
+			throw e;
 		}
-		return true;
+	}
+	
+	@RequestMapping(value = "/updateAjax", method = RequestMethod.POST)
+	@Transactional
+	@ResponseBody
+	public Entity updateAjax(@RequestBody Entity entity) throws Exception {
+		getService().update(entity);
+		return entity;
 	}
 
 	/**

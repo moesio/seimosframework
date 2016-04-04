@@ -18,9 +18,9 @@
 	<ul>
 		<li><a href="#"><spring:message code="app.menu.cadastro"/></a>
 			<ul>
-				<li><a href="${pageContext.request.contextPath}/genero/"><spring:message code="app.menu.cadastro.genero"/></a></li>
-				<li><a href="${pageContext.request.contextPath}/produto/"><spring:message code="app.menu.cadastro.produto"/></a></li>
-				<li><a href="${pageContext.request.contextPath}/fornecedor/"><spring:message code="app.menu.cadastro.fornecedor"/></a></li>
+				<li><a href="${pageContext.request.contextPath}/genero/grid"><spring:message code="app.menu.cadastro.genero"/></a></li>
+				<li><a href="${pageContext.request.contextPath}/produto/grid"><spring:message code="app.menu.cadastro.produto"/></a></li>
+				<li><a href="${pageContext.request.contextPath}/fornecedor/grid"><spring:message code="app.menu.cadastro.fornecedor"/></a></li>
 			</ul>
 		</li>
 	</ul>
