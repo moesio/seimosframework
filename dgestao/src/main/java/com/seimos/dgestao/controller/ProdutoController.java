@@ -22,7 +22,7 @@ import com.seimos.dgestao.service.ProdutoService;
 public class ProdutoController extends GenericCrudController<Produto> {
 
 	private ProdutoService produtoService;
-
+	
 	@Autowired
 	public void setProdutoService (ProdutoService produtoService) {
 		this.produtoService = produtoService;
@@ -32,5 +32,5 @@ public class ProdutoController extends GenericCrudController<Produto> {
 	public GenericService<Produto> getService() {
 		return produtoService;
 	}
-
+	
 }

@@ -44,6 +44,9 @@
 	</#if>
 </#macro>
 
+<#macro label field>
+	<label class="col-sm-2 text-right control-label ${field.mandatory?then('required', '')}"><@spring.messageText "${field.label}" "${field.label}"/></label>
+</#macro>
 <html>
 <head>
 <title>
@@ -54,87 +57,62 @@
     <div class="container-fluid">
         <div class="row clearfix">
             <div class="col-md-12 column">
-                <div class="tabbable" id="tab-list">
-                    <ul class="nav nav-tabs">
-                        <li class="active">
-                            <a href="#cadastro" data-toggle="tab"><@spring.message "form.tab.appform"/></a>
-                        </li>
-                        <li>
-                            <a href="#listagem" data-toggle="tab"><@spring.message "form.tab.list"/></a>
-                        </li>
-                    </ul>
-                    <div class="tab-content">
-                        <div class="tab-pane active" id="cadastro">
-                            <form method='post' action='${page.properties.creation?exists?then('./create', '../update')}'>
-                            <#-- 
-                            enctype="application/json; charset=utf-8"
-                            -->
-                                <div class="col-md-12 column">
-								<#list page.formFields as field>
-                                    <#switch "${field.type}">
-										<#case "HIDDEN">
-                                        	<@spring.formHiddenInput "${field.name}", "class='form-control' maxlength='${field.length!0}'"/><#t>
-									    <#break>
-										<#case "INTEGER">
-                                        <div class="form-group">
-                                            <label class="col-sm-2 text-right control-label"><@spring.messageText "${field.label}" "${field.label}"/></label>
-                                            <div class="col-sm-10">
-                                            	<@spring.formInput "${field.name}", "class='form-control' maxlength='${field.length!0}'", "number"/><#t>
-	                                        </div>
-                                        </div>
-										<#break>
-										<#case "TEXT">
-                                        <div class="form-group">
-                                            <label class="col-sm-2 text-right control-label"><@spring.messageText "${field.label}" "${field.label}"/></label>
-                                            <div class="col-sm-10">
-                                            	<@selectForFixedDomain field=field/>
-	                                        </div>
-                                        </div>
-										<#break>
-										<#case "SELECT">
-                                        <div class="form-group">
-                                            <label class="col-sm-2 text-right control-label"><@spring.messageText "${field.label}" "${field.label}"/></label>
-		                                    <div class="col-sm-10">
-                                            <#--
-                                        		<@selectForField field=field/>
-											<@spring.formSingleSelect "${field.name}.${field.type.idFieldName}" {} "class='form-control' aria-populate='${field.type.reference}'"/><#t>
-                                            -->
-											<@spring.formSingleSelect "${field.name}.${field.idFieldName}" field.populator "class='form-control'"/><#t>
-	                                        </div>
-                                        </div>
-								    	<#break>
-                                	</#switch>
-								</#list>
-	                            <div class="form-group">
-                                    <div class="col-sm-offset-2 col-sm-10">
-                                    <#--
-                                    em caso de submissão ajax
-                                    	<button type="button" class="btn btn-primary" onclick="submitForm($(this))"><@spring.message "form.button.save"/></button>
-                                    -->
-                                    	<input type="submit" class="btn btn-primary" value="<@spring.message "form.button.save"/>"/>
-                                    <#--
-                                    -->
-                                    <button type="reset" class="btn btn-default"><@spring.message "form.button.clean"/></button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-
-                    <div class="tab-pane" id="listagem" >
-                        <div class="container-fluid">
-                            <div class="row clearfix">
-                                <div class="col-md-12 column">
-                                    <div class="form-group">
-                                    botões
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                        
-                    </div>
-                </div>
+	            <form method='post' action='${page.properties.creation?exists?then('./create', '../update')}'>
+	            <#-- 
+	            enctype="application/json; charset=utf-8"
+	            -->
+	                <div class="col-md-12 column">
+					<#list page.formFields as field>
+	                    <#switch "${field.type}">
+							<#case "HIDDEN">
+	                        	<@spring.formHiddenInput "${field.name}", "class='form-control' maxlength='${field.length!0}'"/><#t>
+						    <#break>
+							<#case "INTEGER">
+	                        <div class="form-group">
+	                        	<@label field=field/>
+	                            <div class="col-sm-10">
+	                            	<@spring.formInput "${field.name}", "class='form-control' maxlength='${field.length!0}'", "number"/><#t>
+	                            </div>
+	                        </div>
+							<#break>
+							<#case "TEXT">
+	                        <div class="form-group">
+	                        	<@label field=field/>
+	                            <div class="col-sm-10">
+	                            	<@selectForFixedDomain field=field/>
+	                            </div>
+	                        </div>
+							<#break>
+							<#case "SELECT">
+	                        <div class="form-group">
+	                        	<@label field=field/>
+	                            <div class="col-sm-10">
+	                            <#--
+	                        		<@selectForField field=field/>
+	                            -->
+								<@spring.formSingleSelect "${field.name}.${field.idFieldName}" field.populator "class='form-control'"/><#t>
+	                            </div>
+	                        </div>
+					    	<#break>
+							<#case "DOUBLE">
+					    	<#break>
+							<#case "DATE">
+					    	<#break>
+							<#case "BOOLEAN">
+					    	<#break>
+	                	</#switch>
+					</#list>
+	                <div class="form-group">
+	                    <div class="col-sm-offset-2 col-sm-10">
+	                    <#--
+	                    em caso de submissão ajax
+	                    	<button type="button" class="btn btn-primary" onclick="submitForm($(this))"><@spring.message "form.button.save"/></button>
+	                    -->
+	                    	<input type="submit" class="btn btn-primary" value="<@spring.message "form.button.save"/>"/>
+	                    <button type="reset" class="btn btn-default"><@spring.message "form.button.clean"/></button>
+	                    </div>
+	                </div>
+                </form>
             </div>
         </div>
     </div>

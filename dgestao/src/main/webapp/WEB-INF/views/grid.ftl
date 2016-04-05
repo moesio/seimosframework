@@ -18,7 +18,7 @@
 				<#else>
 					<#assign gridFields = {}>
 				</#if>
-            	<table class="grid">
+            	<table class="table table-bordered table-hover">
             	<thead>
             		<tr>
 					<#list page.formFields as field>

@@ -37,7 +37,7 @@ import com.seimos.commons.web.config.ConfigReader;
 @EnableTransactionManagement
 // TODO Inject package from config.properties
 //@PropertySource(value = "classpath:config.properties")
-@ComponentScan(basePackages = { "com.seimos.dgestao.controller", "com.seimos.dgestao.service", "com.seimos.dgestao.dao", "com.seimos.commons.web.exception" })
+@ComponentScan(basePackages = { "com.seimos.dgestao.controller", "com.seimos.dgestao.service", "com.seimos.dgestao.dao", "com.seimos.dgestao.validator", "com.seimos.commons.web.exception" })
 public class WebAppConfig extends WebMvcConfigurerAdapter {
 	
 	@Bean

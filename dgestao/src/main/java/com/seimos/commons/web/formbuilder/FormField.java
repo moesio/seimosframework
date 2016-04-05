@@ -7,17 +7,15 @@ import java.util.LinkedHashMap;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.seimos.commons.reflection.Reflection;
 import com.seimos.commons.service.GenericService;
-import com.seimos.dgestao.domain.Genero;
-import com.seimos.dgestao.service.GeneroService;
 
 /**
  * @author moesio @ gmail.com
@@ -28,12 +26,12 @@ public class FormField implements Serializable {
 	private String label;
 	private String name;
 	private Integer length;
-	private Boolean nullable;
+	private Boolean mandatory;
 	private LinkedHashMap<String, String> populator;
 	private String idFieldName;
 
 	public enum T {
-		TEXT, INTEGER, SELECT, HIDDEN, BOOLEAN;
+		TEXT, INTEGER, SELECT, HIDDEN, BOOLEAN, DOUBLE, DATE;
 
 //		private String reference;
 //		private LinkedHashMap<String, String> map;
@@ -70,26 +68,44 @@ public class FormField implements Serializable {
 	}
 
 	public FormField(String prefix, Class<?> clazz, Field field) {
-		Column columnAnnotation = field.getAnnotation(Column.class);
 		String className = StringUtils.uncapitalize(clazz.getSimpleName());
 		StringBuilder prefixBuilded = new StringBuilder();
 		if (!prefix.isEmpty()) {
 			prefixBuilded.append(StringUtils.uncapitalize(prefix)).append(".");
 		}
 		prefixBuilded.append(className).append(".");
-		if (columnAnnotation != null) {
-			String nameInAnnotation = columnAnnotation.name();
-			if (nameInAnnotation != null && !nameInAnnotation.isEmpty()) {
-				name = prefixBuilded.append(nameInAnnotation).toString();
+		
+		if (Reflection.isEntity(field.getType())) {
+			JoinColumn columnAnnotation = field.getAnnotation(JoinColumn.class);
+			if (columnAnnotation != null) {
+				String nameInAnnotation = columnAnnotation.name();
+				if (nameInAnnotation != null && !nameInAnnotation.isEmpty()) {
+					name = prefixBuilded.append(nameInAnnotation).toString();
+				} else {
+					name = prefixBuilded.append(field.getName()).toString();
+				}
+				mandatory = !columnAnnotation.nullable();
 			} else {
 				name = prefixBuilded.append(field.getName()).toString();
+				mandatory = false;
 			}
-			length = columnAnnotation.length();
-			nullable = columnAnnotation.nullable();
 		} else {
-			name = prefixBuilded.append(field.getName()).toString();
-			nullable = true;
+			Column columnAnnotation = field.getAnnotation(Column.class);
+			if (columnAnnotation != null) {
+				length = columnAnnotation.length();
+				String nameInAnnotation = columnAnnotation.name();
+				if (nameInAnnotation != null && !nameInAnnotation.isEmpty()) {
+					name = prefixBuilded.append(nameInAnnotation).toString();
+				} else {
+					name = prefixBuilded.append(field.getName()).toString();
+				}
+				mandatory = !columnAnnotation.nullable();
+			} else {
+				name = prefixBuilded.append(field.getName()).toString();
+				mandatory = false;
+			}
 		}
+		
 		label = new StringBuilder(className).append(".page.field.").append(field.getName()).append(".label").toString();
 
 		Class<?> fieldType = field.getType();
@@ -158,12 +174,12 @@ public class FormField implements Serializable {
 		return this;
 	}
 
-	public Boolean getNullable() {
-		return nullable;
+	public Boolean getMandatory() {
+		return mandatory;
 	}
 
-	public FormField setNullable(Boolean nullable) {
-		this.nullable = nullable;
+	public FormField setMandatory(Boolean nullable) {
+		this.mandatory = nullable;
 		return this;
 	}
 
@@ -188,6 +204,6 @@ public class FormField implements Serializable {
 	
 	@Override
 	public String toString() {
-		return "FormField [type=" + type + ", label=" + label + ", name=" + name + ", length=" + length + ", nullable=" + nullable + "]";
+		return "FormField [type=" + type + ", label=" + label + ", name=" + name + ", length=" + length + ", mandatory=" + mandatory + "]";
 	}
 }

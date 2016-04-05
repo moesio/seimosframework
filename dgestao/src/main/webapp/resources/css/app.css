@@ -87,3 +87,8 @@ table.grid td {
 
 table.grid td:last-child {
 }
+
+.required:after {
+	content: "*";
+	color: #f00;
+}

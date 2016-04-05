@@ -13,26 +13,30 @@
 </head>
 <body>
 	<header>
-	<h1><spring:message code="app.name"/></h1>
-	<nav id="menu">
-	<ul>
-		<li><a href="#"><spring:message code="app.menu.cadastro"/></a>
-			<ul>
-				<li><a href="${pageContext.request.contextPath}/genero/grid"><spring:message code="app.menu.cadastro.genero"/></a></li>
-				<li><a href="${pageContext.request.contextPath}/produto/grid"><spring:message code="app.menu.cadastro.produto"/></a></li>
-				<li><a href="${pageContext.request.contextPath}/fornecedor/grid"><spring:message code="app.menu.cadastro.fornecedor"/></a></li>
-			</ul>
-		</li>
-	</ul>
-	</nav> <nav id="breadcrumb"> <a href="#"><spring:message code="app.breadcrumb.home"/></a></nav> </header>
+		<h1><a href="${pageContext.request.contextPath}"><spring:message code="app.name"/></a></h1>
+		<nav id="menu">
+		<ul>
+			<li><a href="#"><spring:message code="app.menu.cadastro"/></a>
+				<ul>
+					<li><a href="${pageContext.request.contextPath}/genero/grid"><spring:message code="app.menu.cadastro.genero"/></a></li>
+					<li><a href="${pageContext.request.contextPath}/produto/grid"><spring:message code="app.menu.cadastro.produto"/></a></li>
+					<li><a href="${pageContext.request.contextPath}/fornecedor/grid"><spring:message code="app.menu.cadastro.fornecedor"/></a></li>
+				</ul>
+			</li>
+		</ul>
+		</nav> <nav id="breadcrumb"> <a href="#"><spring:message code="app.breadcrumb.home"/></a></nav>
+	</header>
+	
 	<section id="main">
-	<h2>
-		<sitemesh:write property='title'></sitemesh:write>
-	</h2>
-	<sitemesh:write property='body' /> </section>
+		<h2> <sitemesh:write property='title'></sitemesh:write> </h2>
+		<hr>
+		<sitemesh:write property='body'></sitemesh:write>
+	</section>
+	
 	<footer>
-	<p>Free Software</p>
+		<p>Free Software</p>
 	</footer>
+	
 	<script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery-2.1.1.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/angular.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/resources/bootstrap/js/bootstrap.min.js"></script>

@@ -4,6 +4,8 @@ import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -101,8 +105,11 @@ public abstract class GenericCrudController<Entity> {
 	@RequestMapping(value = "/create", method = RequestMethod.POST )
 	@Transactional
 	//		@ExceptionHandler
-	public ModelAndView create(@ModelAttribute Entity entity, RedirectAttributes redirect) throws Exception {
+	public ModelAndView create(@Valid @ModelAttribute Entity entity, RedirectAttributes redirect, BindingResult result) throws Exception {
 		try {
+			if (result.hasErrors()) {
+				return new ModelAndView("redirect:./");
+			}
 			getService().create(entity);
 //			redirect.addFlashAttribute(entity);
 			return new ModelAndView("redirect:./grid");
@@ -118,29 +125,6 @@ public abstract class GenericCrudController<Entity> {
 	public Entity createAjax(@RequestBody Entity entity) throws Exception {
 		getService().create(entity);
 		return entity;
-	}
-
-	/**
-	 * Creates a batch of new records of type Model. A list of Model in json format must be sent in body request
-	 * 
-	 * @param entities - a list of Model
-	 * @return
-	 */
-	@RequestMapping(value = "/batch", method = RequestMethod.POST)
-	@ResponseBody
-	public Boolean create(@RequestBody List<Entity> entities) {
-		for (Entity model : entities) {
-			try {
-				if (create(model, null) != null) {
-					continue;
-				} else {
-					return false;
-				}
-			} catch (Exception e) {
-				logger.error("While batch, 'create' thown an exception for " + model, e);
-			}
-		}
-		return true;
 	}
 
 	/**
@@ -211,26 +195,15 @@ public abstract class GenericCrudController<Entity> {
 
 	@RequestMapping(value = "/edit/{id}", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
-	//	@ResponseBody
 	public String editForm(Model model, @PathVariable Integer id) {
 		createPage(model);
 		Entity entity = getService().findById(id);
 		model.addAttribute(getEntitySimpleName(), entity);
-//		model.addAttribute("action", "update");
 		return "edit";
-		//		return "<html><body>Ediçasdfasdfasdasdfão " + id + "</body></html>";
 	}
-
-	//	@RequestMapping(value = "/grid", method = RequestMethod.GET)
-	//	@ResponseBody
-	//	public String grid(@ModelAttribute Entity entity) {
-	//		List<Entity> list = getService().find(entity);
-	//		return "<html><body>Grid</body></html>";
-	//	}
 
 	@RequestMapping(value = "/grid", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
-	//	public String grid(@RequestBody Entity entity) {
 	public String grid(@ModelAttribute Entity entity, Model model, Integer start, Integer rows) {
 		List<Entity> list = getService().find(entity);
 		createPage(model);
