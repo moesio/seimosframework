@@ -6,8 +6,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.seimos.commons.controller.GenericCrudController;
 import com.seimos.commons.service.GenericService;
+import com.seimos.commons.validator.GenericValidator;
 import com.seimos.dgestao.domain.Fornecedor;
 import com.seimos.dgestao.service.FornecedorService;
+import com.seimos.dgestao.validator.FornecedorValidator;
 
 /**
  * This controller will response a call about module of Fornecedor type. It's will
@@ -22,15 +24,26 @@ import com.seimos.dgestao.service.FornecedorService;
 public class FornecedorController extends GenericCrudController<Fornecedor> {
 
 	private FornecedorService fornecedorService;
+	private FornecedorValidator fornecedorValidator;
 
 	@Autowired
 	public void setFornecedorService (FornecedorService fornecedorService) {
 		this.fornecedorService = fornecedorService;
 	}
+
+	@Autowired
+	public void setFornecedorValidator(FornecedorValidator fornecedorValidator) {
+		this.fornecedorValidator = fornecedorValidator;
+	}
 	
 	@Override
 	public GenericService<Fornecedor> getService() {
 		return fornecedorService;
+	}
+
+	@Override
+	public GenericValidator<Fornecedor> getValidator() {
+		return fornecedorValidator;
 	}
 
 }

@@ -6,8 +6,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.seimos.commons.controller.GenericCrudController;
 import com.seimos.commons.service.GenericService;
+import com.seimos.commons.validator.GenericValidator;
 import com.seimos.dgestao.domain.Genero;
 import com.seimos.dgestao.service.GeneroService;
+import com.seimos.dgestao.validator.GeneroValidator;
 
 /**
  * @author moesio @ gmail.com
@@ -18,6 +20,7 @@ import com.seimos.dgestao.service.GeneroService;
 public class GeneroController extends GenericCrudController<Genero> {
 
 	private GeneroService generoService;
+	private GeneroValidator generoValidator;
 	
 	/**
 	 * @param generoService the generoService to set
@@ -27,11 +30,21 @@ public class GeneroController extends GenericCrudController<Genero> {
 		this.generoService = generoService;
 	}
 	
+	@Autowired
+	public void setGeneroValidator(GeneroValidator generoValidator) {
+		this.generoValidator = generoValidator;
+	}
+	
 	/* (non-Javadoc)
 	 * @see com.seimos.commons.controller.GenericCrudController#getService()
 	 */
 	@Override
 	public GenericService<Genero> getService() {
 		return generoService;
+	}
+
+	@Override
+	public GenericValidator<Genero> getValidator() {
+		return generoValidator;
 	}
 }

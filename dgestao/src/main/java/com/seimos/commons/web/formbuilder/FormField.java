@@ -10,18 +10,24 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.HibernateException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.seimos.commons.reflection.Reflection;
 import com.seimos.commons.service.GenericService;
+import com.seimos.commons.validator.GenericValidator;
 
 /**
  * @author moesio @ gmail.com
  * @date Sep 28, 2014 12:50:36 PM
  */
 public class FormField implements Serializable {
+	
+	protected static final Logger logger = LoggerFactory.getLogger(FormField.class);
 	private T type;
 	private String label;
 	private String name;
@@ -114,13 +120,18 @@ public class FormField implements Serializable {
 			idFieldName = Reflection.getIdField(field.getType()).getName();
 			populator = new LinkedHashMap<String, String>();
 			
-			WebApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
-			GenericService<?> service = (GenericService<?>) context.getBean(StringUtils.uncapitalize(field.getType().getSimpleName()).concat("ServiceImpl"));
-			ArrayList<SelectOption> tinyList = service.tinyList();
-			
-			for (SelectOption option : tinyList) {
-				populator.put(option.getValue(), option.getText());
+			try {
+				WebApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
+				GenericService<?> service = (GenericService<?>) context.getBean(StringUtils.uncapitalize(field.getType().getSimpleName()).concat("ServiceImpl"));
+				ArrayList<SelectOption> tinyList = service.tinyList();
+				
+				for (SelectOption option : tinyList) {
+					populator.put(option.getValue(), option.getText());
+				}
+			} catch (HibernateException e) {
+				logger.warn("field populator is not necessary while validation. Cautionn if this message appears while other operations.");
 			}
+			
 		} else if (field.isAnnotationPresent(Id.class)) {
 			type = T.HIDDEN;
 		} else {
@@ -182,7 +193,6 @@ public class FormField implements Serializable {
 		this.mandatory = nullable;
 		return this;
 	}
-
 
 	public LinkedHashMap<String, String> getPopulator() {
 		return populator;

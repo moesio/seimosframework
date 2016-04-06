@@ -5,6 +5,8 @@ import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.util.StringUtils;
@@ -17,6 +19,7 @@ import com.seimos.commons.web.formbuilder.SelectOption;
 
 public abstract class GenericServiceImpl<Domain, Dao extends GenericDao<Domain>> implements GenericService<Domain> {
 
+	protected static final Logger logger = LoggerFactory.getLogger(GenericServiceImpl.class);
 	private ReloadableResourceBundleMessageSource messageSource;
 	private Class<Domain> entityClass;
 
@@ -70,11 +73,13 @@ public abstract class GenericServiceImpl<Domain, Dao extends GenericDao<Domain>>
 		Filters filters = new Filters();
 
 		if (value == null) {
+			logger.debug("There's no key \""+ entityName.concat(".tinyList.value") + "\" in message resource bundle.");
 			value = Reflection.getIdField(entityClass).getName();
 		}
 		filters.add(new Filter(value));
 
 		if (label == null) {
+			logger.debug("There's no key \""+ entityName.concat(".tinyList.label") + "\" in message resource bundle.");
 			filters.add(new Filter("*"));
 		} else {
 			String[] split = label.split("\\+");

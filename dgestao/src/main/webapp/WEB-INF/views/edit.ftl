@@ -58,10 +58,10 @@
         <div class="row clearfix">
             <div class="col-md-12 column">
 	            <form method='post' action='${page.properties.creation?exists?then('./create', '../update')}'>
+		        <div class="col-md-12 column">
 	            <#-- 
 	            enctype="application/json; charset=utf-8"
 	            -->
-	                <div class="col-md-12 column">
 					<#list page.formFields as field>
 	                    <#switch "${field.type}">
 							<#case "HIDDEN">
@@ -112,9 +112,13 @@
 	                    <button type="reset" class="btn btn-default"><@spring.message "form.button.clean"/></button>
 	                    </div>
 	                </div>
+	            </div>
                 </form>
-            </div>
-        </div>
+                <#--
+                </@form.form>
+                -->
+	        </div>
+	    </div>
     </div>
 </body>
 </html>

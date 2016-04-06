@@ -3,6 +3,7 @@ package com.seimos.commons.controller;
 import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -10,23 +11,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.seimos.commons.hibernate.Filter;
 import com.seimos.commons.hibernate.Filters;
 import com.seimos.commons.service.GenericService;
+import com.seimos.commons.validator.GenericValidator;
 import com.seimos.commons.web.formbuilder.Page;
 import com.seimos.commons.web.formbuilder.SelectOption;
 
@@ -63,6 +68,7 @@ public abstract class GenericCrudController<Entity> {
 	public Environment env;
 
 	public abstract GenericService<Entity> getService();
+	public abstract GenericValidator<Entity> getValidator();
 
 	@SuppressWarnings("unchecked")
 	public GenericCrudController() {
@@ -72,6 +78,11 @@ public abstract class GenericCrudController<Entity> {
 	@Autowired
 	public void setEnv(Environment env) {
 		this.env = env;
+	}
+
+	@InitBinder
+	public void initBinder(WebDataBinder binder) {
+		binder.setValidator(getValidator());
 	}
 
 	private Page createPage(Model model) {
@@ -102,16 +113,16 @@ public abstract class GenericCrudController<Entity> {
 	 * @return TRUE - Success / FALSE - Failed
 	 * @throws Exception 
 	 */
-	@RequestMapping(value = "/create", method = RequestMethod.POST )
+	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	@Transactional
 	//		@ExceptionHandler
-	public ModelAndView create(@Valid @ModelAttribute Entity entity, RedirectAttributes redirect, BindingResult result) throws Exception {
+	public ModelAndView create(@Valid @ModelAttribute Entity entity, BindingResult result, RedirectAttributes redirect) throws Exception {
 		try {
 			if (result.hasErrors()) {
 				return new ModelAndView("redirect:./");
 			}
-			getService().create(entity);
-//			redirect.addFlashAttribute(entity);
+			//			getService().create(entity);
+			//			redirect.addFlashAttribute(entity);
 			return new ModelAndView("redirect:./grid");
 		} catch (Exception e) {
 			logger.error("Create throwns an exception for " + entity, e);
@@ -150,7 +161,6 @@ public abstract class GenericCrudController<Entity> {
 	public List<SelectOption> tinyList() {
 		return getService().tinyList();
 	}
-
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
@@ -232,7 +242,7 @@ public abstract class GenericCrudController<Entity> {
 			throw e;
 		}
 	}
-	
+
 	@RequestMapping(value = "/updateAjax", method = RequestMethod.POST)
 	@Transactional
 	@ResponseBody

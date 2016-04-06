@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <%@ page pageEncoding="UTF-8"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <html>
 <head>
 <title><sitemesh:write property='title'></sitemesh:write></title>

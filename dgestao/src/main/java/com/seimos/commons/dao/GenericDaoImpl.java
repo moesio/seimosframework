@@ -28,6 +28,8 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.sql.JoinType;
 import org.hibernate.transform.RootEntityResultTransformer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
@@ -36,19 +38,20 @@ import org.springframework.orm.hibernate4.support.HibernateDaoSupport;
 
 import com.seimos.commons.hibernate.CustomPropertyAliasProjection;
 import com.seimos.commons.hibernate.Filter;
-import com.seimos.commons.hibernate.Filters;
-import com.seimos.commons.hibernate.ProjectionResultTransformer;
 import com.seimos.commons.hibernate.Filter.Condition;
 import com.seimos.commons.hibernate.Filter.Distinct;
 import com.seimos.commons.hibernate.Filter.Function;
 import com.seimos.commons.hibernate.Filter.Order;
 import com.seimos.commons.hibernate.Filter.Projection;
 import com.seimos.commons.hibernate.Filter.Wildcard;
+import com.seimos.commons.hibernate.Filters;
+import com.seimos.commons.hibernate.ProjectionResultTransformer;
 import com.seimos.commons.reflection.Reflection;
 
 
 public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements GenericDao<Domain> {
 
+	protected static final Logger logger = LoggerFactory.getLogger(GenericDaoImpl.class);
 	private Class<Domain> entityClass;
 	protected HibernateTemplate hibernateTemplate;
 

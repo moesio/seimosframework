@@ -8,6 +8,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 /**
  * @author Moesio Medeiros
  * @date Fri Oct 24 12:43:36 BRT 2014
@@ -22,6 +24,7 @@ public class Produto {
 	@JoinColumn(nullable = false)
 	private Genero genero;
 	@Column(nullable = false, length = 5)
+	@NotEmpty
 	private String codigo;
 	@Column(nullable = false, length = 50)
 	private String nome;
