@@ -10,6 +10,8 @@ import java.util.List;
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
 
+import org.springframework.util.StringUtils;
+
 import com.seimos.commons.reflection.Reflection;
 
 /**
@@ -22,6 +24,7 @@ public class Page implements Serializable {
 	private List<FormField> formFields;
 	private Object data;
 	private HashMap<String, Object> properties = new HashMap<String, Object>();
+	private String entityName;
 
 	@SuppressWarnings("unused")
 	private Page() {
@@ -29,15 +32,12 @@ public class Page implements Serializable {
 
 	// TODO Create a webForm cache to avoid reflection for every request 
 	public Page(Class<?> clazz) {
-		title = new StringBuilder(clazz.getSimpleName().toLowerCase()).append(".page.title").toString();
+		entityName = StringUtils.uncapitalize(clazz.getSimpleName());
+		title = new StringBuilder(entityName).append(".page.title").toString();
 		formFields = new ArrayList<FormField>();
 		formFields.addAll(extractFields(clazz));
 	}
 
-	/**
-	 * @param clazz
-	 * @return
-	 */
 	private Collection<? extends FormField> extractFields(Class<?> clazz) {
 		return extractFields("", clazz);
 	}
@@ -62,6 +62,15 @@ public class Page implements Serializable {
 
 	public Page setTitle(String title) {
 		this.title = title;
+		return this;
+	}
+
+	public String getEntityName() {
+		return entityName;
+	}
+
+	public Page setEntityName(String root) {
+		this.entityName = root;
 		return this;
 	}
 
@@ -91,9 +100,14 @@ public class Page implements Serializable {
 		this.properties = properties;
 		return this;
 	}
-	
+
 	public void addProperty(String key, Object value) {
 		properties.put(key, value);
 	}
-	
+
+	@Override
+	public String toString() {
+		return "Page [title=" + title + ", formFields=" + formFields + ", data=" + data + ", properties=" + properties + ", root=" + entityName + "]";
+	}
+
 }

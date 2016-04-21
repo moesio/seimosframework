@@ -1,9 +1,7 @@
 <html>
 <head>
 <title>
-<#---
-<@spring.message "${webForm.title}"/>
--->
+<@spring.message "${page.title}"/>
 </title>
 </head>
 <body>
@@ -11,7 +9,7 @@
         <div class="row clearfix">
             <div class="col-md-12 column">
 				<#assign gridFieldsCandidate>
-					<@spring.messageText "${entity}.page.grid.fields" ""/>
+					<@spring.messageText "${page.entityName}.page.grid.fields" ""/>
 				</#assign>
 				<#if gridFieldsCandidate?length gt 0>
 					<#assign gridFields = gridFieldsCandidate?split(",")>

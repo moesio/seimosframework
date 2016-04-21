@@ -1,3 +1,9 @@
+<#--
+<#assign form=JspTaglibs["http://www.springframework.org/tags/form"] />
+-->
+<#assign form=JspTaglibs["/WEB-INF/tld/spring.tld"]/>
+<#assign form=JspTaglibs["/WEB-INF/tld/spring-form.tld"]/>
+
 <#macro selectForField field>
 	<#assign value>
 		<@spring.messageText "${field.label}.select.value" ""/><#t>
@@ -58,6 +64,8 @@
         <div class="row clearfix">
             <div class="col-md-12 column">
 	            <form method='post' action='${page.properties.creation?exists?then('./create', '../update')}'>
+				<@spring.bind page.entityName />
+				<@spring.showErrors page.entityName/>
 		        <div class="col-md-12 column">
 	            <#-- 
 	            enctype="application/json; charset=utf-8"
@@ -101,6 +109,11 @@
 							<#case "BOOLEAN">
 					    	<#break>
 	                	</#switch>
+		                <div class="form-group">
+		                    <div class="col-sm-offset-2 col-sm-10 bg-danger">
+							<@form.errors path="${field.name}" cssClass="error" />
+		                    </div>
+		                </div>
 					</#list>
 	                <div class="form-group">
 	                    <div class="col-sm-offset-2 col-sm-10">
@@ -114,9 +127,6 @@
 	                </div>
 	            </div>
                 </form>
-                <#--
-                </@form.form>
-                -->
 	        </div>
 	    </div>
     </div>

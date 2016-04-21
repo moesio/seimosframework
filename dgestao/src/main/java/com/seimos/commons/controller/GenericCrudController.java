@@ -3,7 +3,6 @@ package com.seimos.commons.controller;
 import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -11,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -24,12 +22,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.seimos.commons.hibernate.Filter;
 import com.seimos.commons.hibernate.Filters;
+import com.seimos.commons.reflection.Reflection;
 import com.seimos.commons.service.GenericService;
 import com.seimos.commons.validator.GenericValidator;
 import com.seimos.commons.web.formbuilder.Page;
@@ -68,6 +66,7 @@ public abstract class GenericCrudController<Entity> {
 	public Environment env;
 
 	public abstract GenericService<Entity> getService();
+
 	public abstract GenericValidator<Entity> getValidator();
 
 	@SuppressWarnings("unchecked")
@@ -116,13 +115,15 @@ public abstract class GenericCrudController<Entity> {
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	@Transactional
 	//		@ExceptionHandler
+	// @ModelAttribute anotaded attribute MUST BE FOLLOWED by BindingResult attribute, else, error is thrown
 	public ModelAndView create(@Valid @ModelAttribute Entity entity, BindingResult result, RedirectAttributes redirect) throws Exception {
 		try {
 			if (result.hasErrors()) {
+				redirect.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX + getEntitySimpleName(), result);
+				redirect.addFlashAttribute(getEntitySimpleName(), entity);
 				return new ModelAndView("redirect:./");
 			}
-			//			getService().create(entity);
-			//			redirect.addFlashAttribute(entity);
+			getService().create(entity);
 			return new ModelAndView("redirect:./grid");
 		} catch (Exception e) {
 			logger.error("Create throwns an exception for " + entity, e);
@@ -166,9 +167,12 @@ public abstract class GenericCrudController<Entity> {
 	@Transactional(readOnly = true)
 	public String newForm(Model model) {
 		Page page = createPage(model);
+		// TODO Is there a way to avoid this property and read if 'id' is null or not?
 		page.addProperty("creation", true);
 		try {
-			model.addAttribute(getEntitySimpleName(), entityClass.newInstance());
+			if (model.asMap().get(BindingResult.MODEL_KEY_PREFIX + getEntitySimpleName()) == null) {
+				model.addAttribute(getEntitySimpleName(), entityClass.newInstance());
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -208,7 +212,9 @@ public abstract class GenericCrudController<Entity> {
 	public String editForm(Model model, @PathVariable Integer id) {
 		createPage(model);
 		Entity entity = getService().findById(id);
-		model.addAttribute(getEntitySimpleName(), entity);
+		if (model.asMap().get(BindingResult.MODEL_KEY_PREFIX + getEntitySimpleName()) == null) {
+			model.addAttribute(getEntitySimpleName(), entity);
+		}
 		return "edit";
 	}
 
@@ -232,10 +238,16 @@ public abstract class GenericCrudController<Entity> {
 	 */
 	@RequestMapping(value = "/update", method = RequestMethod.POST)
 	@Transactional
-	public ModelAndView update(@ModelAttribute Entity entity, RedirectAttributes redirect) throws Exception {
+	public ModelAndView update(@Valid @ModelAttribute Entity entity, BindingResult result, RedirectAttributes redirect) throws Exception {
 		try {
+			if (result.hasErrors()) {
+				redirect.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX + getEntitySimpleName(), result);
+				redirect.addFlashAttribute(getEntitySimpleName(), entity);
+				String id = Reflection.invoke(entity, Reflection.getIdField(entityClass).getName()).toString();
+				return new ModelAndView("redirect:./edit/".concat(id));
+			}
 			getService().update(entity);
-			redirect.addFlashAttribute(entity);
+//			redirect.addFlashAttribute(entity);
 			return new ModelAndView("redirect:./grid");
 		} catch (Exception e) {
 			logger.error("Update exception for " + entity, e);
