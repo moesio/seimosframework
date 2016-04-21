@@ -73,13 +73,13 @@ public abstract class GenericServiceImpl<Domain, Dao extends GenericDao<Domain>>
 		Filters filters = new Filters();
 
 		if (value == null) {
-			logger.debug("There's no key \""+ entityName.concat(".tinyList.value") + "\" in message resource bundle.");
+			logger.debug("There's no key \"" + entityName.concat(".tinyList.value") + "\" in message resource bundle.");
 			value = Reflection.getIdField(entityClass).getName();
 		}
 		filters.add(new Filter(value));
 
 		if (label == null) {
-			logger.debug("There's no key \""+ entityName.concat(".tinyList.label") + "\" in message resource bundle.");
+			logger.debug("There's no key \"" + entityName.concat(".tinyList.label") + "\" in message resource bundle.");
 			filters.add(new Filter("*"));
 		} else {
 			String[] split = label.split("\\+");
@@ -90,25 +90,57 @@ public abstract class GenericServiceImpl<Domain, Dao extends GenericDao<Domain>>
 			}
 		}
 
+		String sortBy = messageSource.getMessage(entityName.concat(".tinyList.sortBy"), null, null, null);
+		if (sortBy != null) {
+			filters.add(new Filter(sortBy, Filter.Order.ASC));
+		}
+
 		ArrayList<SelectOption> options = new ArrayList<SelectOption>();
-		List<Domain> list = find(filters);
+		Integer listSize = null;
+		String tinyListMaxSize = messageSource.getMessage(entityName.concat(".tinyList.maxSize"), null, null, null);
+		if (tinyListMaxSize == null) {
+			tinyListMaxSize = messageSource.getMessage("form.tinyList.maxSize", null, null, null);
+		}
+		try {
+			listSize = Integer.valueOf(tinyListMaxSize);
+		} catch (NumberFormatException e) {
+			logger.debug("Property ".concat(entityName.concat(".tinyList.maxSize")).concat(" at resource bundle is not a number. No limit assummed."));
+		}
+
+		List<Domain> list;
+		if (listSize == null) {
+			list = find(filters);
+		} else {
+			list = find(filters, 1, listSize + 1);
+		}
 		SelectOption selectOption;
 		for (Domain item : list) {
-			selectOption = new SelectOption().setValue(Reflection.invoke(item, value).toString());
-
-			if (label == null) {
-				selectOption.setText(item.toString());
-			} else {
-				newLabel = new StringBuilder();
-				String[] split = label.split("\\+");
-				for (String labelComponent : split) {
-					if (labelComponent.contains("\"") || labelComponent.contains("\'")) {
-						newLabel.append(labelComponent.replace("\"", "").replace("\'", ""));
-					} else {
-						newLabel.append(Reflection.invoke(item, labelComponent.trim()));
-					}
+			if (listSize != null && options.size() == listSize) {
+				String overloadMessage = messageSource.getMessage(entityName.concat(".tinyList.maxSize.overloaded"), null, null, null);
+				if (overloadMessage == null) {
+					overloadMessage = messageSource.getMessage("form.tinyList.maxSize.overloaded", null, null, null);
 				}
-				selectOption.setText(newLabel.toString());
+				if (overloadMessage == null) {
+					overloadMessage = "List overload maxSize";
+				}
+				selectOption = new SelectOption().setValue("").setText(overloadMessage);
+			} else {
+				selectOption = new SelectOption().setValue(Reflection.invoke(item, value).toString());
+
+				if (label == null) {
+					selectOption.setText(item.toString());
+				} else {
+					newLabel = new StringBuilder();
+					String[] split = label.split("\\+");
+					for (String labelComponent : split) {
+						if (labelComponent.contains("\"") || labelComponent.contains("\'")) {
+							newLabel.append(labelComponent.replace("\"", "").replace("\'", ""));
+						} else {
+							newLabel.append(Reflection.invoke(item, labelComponent.trim()));
+						}
+					}
+					selectOption.setText(newLabel.toString());
+				}
 			}
 			options.add(selectOption);
 		}
