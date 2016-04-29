@@ -65,11 +65,15 @@
             <div class="col-md-12 column">
 	            <form method='post' action='${page.properties.creation?exists?then('./create', '../update')}'>
 				<@spring.bind page.entityName />
-				<@spring.showErrors page.entityName/>
 		        <div class="col-md-12 column">
 	            <#-- 
 	            enctype="application/json; charset=utf-8"
 	            -->
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+					<@spring.showErrors "<br/>" "text-danger"/>
+						</div>
+					</div>
 					<#list page.formFields as field>
 	                    <#switch "${field.type}">
 							<#case "HIDDEN">

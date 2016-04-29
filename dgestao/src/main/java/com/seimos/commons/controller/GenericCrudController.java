@@ -67,8 +67,6 @@ public abstract class GenericCrudController<Entity> {
 
 	public abstract GenericService<Entity> getService();
 
-	public abstract GenericValidator<Entity> getValidator();
-
 	@SuppressWarnings("unchecked")
 	public GenericCrudController() {
 		this.entityClass = (Class<Entity>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
@@ -84,6 +82,8 @@ public abstract class GenericCrudController<Entity> {
 		binder.setValidator(getValidator());
 	}
 
+	public abstract GenericValidator<Entity> getValidator();
+	
 	private Page createPage(Model model) {
 		Page page = null;
 		// TODO Fazer um cache para diminuir o tempo da reflexão. 
