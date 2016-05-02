@@ -95,6 +95,8 @@ public interface GenericDao<Domain>
      */
     List<Domain> find(Domain entity);
     
+    List<Domain> find(Domain entity, Integer firstResult, Integer maxResults);
+    
     /**
      * Find using filters as criteria
      * 

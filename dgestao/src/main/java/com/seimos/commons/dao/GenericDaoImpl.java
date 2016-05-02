@@ -104,10 +104,13 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 
 	@SuppressWarnings("unchecked")
 	public List<Domain> list() {
+		return listCriteria().list();
+	}
+
+	private Criteria listCriteria() {
 		Criteria criteria = getCurrentSession().createCriteria(getEntityClass());
 		criteria.setResultTransformer(RootEntityResultTransformer.INSTANCE);
-
-		return criteria.list();
+		return criteria;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -116,10 +119,30 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 			return list();
 		}
 
-		List<Domain> list = createListCriteria(entity).list();
+		Criteria listCriteria = createListCriteria(entity);
+		List<Domain> list = listCriteria.list();
 		return list;
 	}
 
+	@SuppressWarnings("unchecked")
+	public List<Domain> find(Domain entity, Integer firstResult, Integer maxResults) {
+		Criteria listCriteria;
+		if (entity == null) {
+			listCriteria = listCriteria();
+		} else {
+			listCriteria = createListCriteria(entity);
+		}
+		if (firstResult != null) {
+			listCriteria.setFirstResult(firstResult);
+		}
+		if (maxResults != null) {
+			listCriteria.setMaxResults(maxResults);
+		}
+		
+		List<Domain> list = listCriteria.list();
+		return list;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public List<Domain> sortedFind(Domain entity, String... order) {
 		if (entity == null) {

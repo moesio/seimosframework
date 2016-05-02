@@ -221,7 +221,7 @@ public abstract class GenericCrudController<Entity> {
 	@RequestMapping(value = "/grid", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
 	public String grid(@ModelAttribute Entity entity, Model model, Integer start, Integer rows) {
-		List<Entity> list = getService().find(entity);
+		List<Entity> list = getService().find(entity, start, rows);
 		createPage(model);
 		model.addAttribute("list", list);
 		model.addAttribute("entity", getEntitySimpleName());

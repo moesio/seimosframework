@@ -75,7 +75,7 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 		Properties properties = new Properties();
 		properties.setProperty(freemarker.template.Configuration.AUTO_IMPORT_KEY, "/spring.ftl as spring");
 		configurer.setFreemarkerSettings(properties);
-//		configurer.getTaglibFactory().setClasspathTlds(classpathTlds)
+//		configurer.getTaglibFactory().setClasspathTlds(".")
 		return configurer;
 	}
 

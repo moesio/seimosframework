@@ -1,8 +1,8 @@
-<#--
 <#assign form=JspTaglibs["http://www.springframework.org/tags/form"] />
--->
+<#--
 <#assign form=JspTaglibs["/WEB-INF/tld/spring.tld"]/>
 <#assign form=JspTaglibs["/WEB-INF/tld/spring-form.tld"]/>
+-->
 
 <#macro selectForField field>
 	<#assign value>

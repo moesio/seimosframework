@@ -1,3 +1,8 @@
+<#--
+<#assign display=JspTaglibs["http://displaytag.sf.net"]/>
+-->
+<#assign form=JspTaglibs["http://www.springframework.org/tags/form"] />
+
 <html>
 <head>
 <title>
@@ -8,6 +13,11 @@
     <div class="container-fluid">
         <div class="row clearfix">
             <div class="col-md-12 column">
+            
+            <#--
+            <@display.table name="list"/>
+            -->
+            
 				<#assign gridFieldsCandidate>
 					<@spring.messageText "${page.entityName}.page.grid.fields" ""/>
 				</#assign>

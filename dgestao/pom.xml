@@ -69,11 +69,13 @@
     	<artifactId>spring-orm</artifactId>
     	<version>${spring-version}</version>
     </dependency>
+    <!-- 
     <dependency>
     	<groupId>org.slf4j</groupId>
     	<artifactId>slf4j-log4j12</artifactId>
     	<version>1.6.1</version>
     </dependency>
+     -->
     <dependency>
     	<groupId>org.freemarker</groupId>
     	<artifactId>freemarker</artifactId>
@@ -98,6 +100,11 @@
     	<groupId>org.hibernate</groupId>
     	<artifactId>hibernate-validator</artifactId>
     	<version>5.2.0.Alpha1</version>
+    </dependency>
+    <dependency>
+    	<groupId>displaytag</groupId>
+    	<artifactId>displaytag</artifactId>
+    	<version>1.2</version>
     </dependency>
   </dependencies>
   <build>

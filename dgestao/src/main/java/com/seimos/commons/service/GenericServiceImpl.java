@@ -171,6 +171,10 @@ public abstract class GenericServiceImpl<Domain, Dao extends GenericDao<Domain>>
 		return getDao().find(entity);
 	}
 
+	public List<Domain> find(Domain entity, Integer firstResult, Integer maxResult) {
+		return getDao().find(entity, firstResult, maxResult);
+	}
+	
 	public List<Domain> sortedFind(Domain entity, String... order) {
 		return getDao().sortedFind(entity, order);
 	}

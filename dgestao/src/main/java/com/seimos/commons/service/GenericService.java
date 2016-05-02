@@ -21,6 +21,7 @@ public interface GenericService<Domain>
 	ArrayList<SelectOption> tinyList();
     List<Domain> sortedFind(Domain entity, String... order);
     List<Domain> find(Domain entity);
+    List<Domain> find(Domain entity, Integer firstResult, Integer maxResult);
 	List<Domain> find(Filters filters);
 	List<Domain> find(Filters filters, Integer firstResult, Integer maxResult);
 	List<Domain> find(List<Filter> filters);
