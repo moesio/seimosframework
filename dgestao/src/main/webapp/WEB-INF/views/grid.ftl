@@ -6,7 +6,7 @@
 <html>
 <head>
 <title>
-<@spring.message "${page.title}"/>
+<@spring.messageText "${page.title}" "${page.title}"/>
 </title>
 </head>
 <body>
@@ -42,7 +42,7 @@
 						</#if>
 					</#list>
 						<td>
-							Ações
+							<@spring.messageText "grid.action" "grid.action"/>
 						</td>
             		</tr>
             	</thead>
@@ -105,7 +105,7 @@
                 <div class="col-sm-12">
 					<a href="./">
 		                <button class="btn btn-primary">
-							<@spring.message "form.button.new"/>
+							<@spring.messageText "form.button.new" "form.button.new"/>
 						</button>
 					</a>
                 </div>

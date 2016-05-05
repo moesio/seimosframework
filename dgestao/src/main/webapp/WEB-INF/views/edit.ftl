@@ -56,7 +56,7 @@
 <html>
 <head>
 <title>
-<@spring.message "${page.title}"/>
+<@spring.messageText "${page.title}" "${page.title}"/>
 </title>
 </head>
 <body>
@@ -112,6 +112,8 @@
 					    	<#break>
 							<#case "BOOLEAN">
 					    	<#break>
+							<#case "BOOLEAN">
+					    	<#break>
 	                	</#switch>
 		                <div class="form-group">
 		                    <div class="col-sm-offset-2 col-sm-10 bg-danger">
@@ -123,10 +125,10 @@
 	                    <div class="col-sm-offset-2 col-sm-10">
 	                    <#--
 	                    em caso de submissão ajax
-	                    	<button type="button" class="btn btn-primary" onclick="submitForm($(this))"><@spring.message "form.button.save"/></button>
+	                    	<button type="button" class="btn btn-primary" onclick="submitForm($(this))"><@spring.messageText "form.button.save" "form.button.save"/></button>
 	                    -->
-	                    	<input type="submit" class="btn btn-primary" value="<@spring.message "form.button.save"/>"/>
-	                    <button type="reset" class="btn btn-default"><@spring.message "form.button.clean"/></button>
+	                    	<input type="submit" class="btn btn-primary" value="<@spring.messageText "form.button.save" "form.button.save"/>"/>
+	                    <button type="reset" class="btn btn-default"><@spring.messageText "form.button.clean" "form.button.clean"/></button>
 	                    </div>
 	                </div>
 	            </div>
