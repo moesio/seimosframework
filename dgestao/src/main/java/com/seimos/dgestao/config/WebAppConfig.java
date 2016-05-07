@@ -1,6 +1,7 @@
 package com.seimos.dgestao.config;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
@@ -27,6 +28,9 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
 import com.seimos.commons.web.config.ConfigKey;
 import com.seimos.commons.web.config.ConfigReader;
+import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
+
+import freemarker.ext.jsp.TaglibFactory.MetaInfTldSource;
 
 /**
  * @author moesio @ gmail.com
@@ -75,7 +79,11 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 		Properties properties = new Properties();
 		properties.setProperty(freemarker.template.Configuration.AUTO_IMPORT_KEY, "/spring.ftl as spring");
 		configurer.setFreemarkerSettings(properties);
-//		configurer.getTaglibFactory().setClasspathTlds(".")
+		
+//		ArrayList a = new ArrayList();
+//		a.add("/Users/moesio/.m2/repository/displaytag/");
+//		configurer.getTaglibFactory().setClasspathTlds(a);
+		
 		return configurer;
 	}
 
