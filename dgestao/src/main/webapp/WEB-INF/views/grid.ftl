@@ -1,6 +1,3 @@
-<#--
--->
-<#assign display=JspTaglibs["http://displaytag.sf.net"] />
 <#assign form=JspTaglibs["http://www.springframework.org/tags/form"] />
 
 <html>
@@ -10,6 +7,7 @@
 </title>
 </head>
 <body>
+${rowCount!"ddd"}
     <div class="container-fluid">
         <div class="row clearfix">
             <div class="col-md-12 column">
@@ -21,54 +19,6 @@
 				<#else>
 					<#assign gridFields = {}>
 				</#if>
-            
-            <#--
-            <@display.table name="page.formFields">
-			</@display.table>
-            -->
-            
-            <@display.table name="list">
-				<#list page.formFields as field>
-	                <#if "${field.type}" != "HIDDEN">
-						<#assign name>
-							${field.name[field.name?string?last_index_of('.')+1..]}<#t>
-						</#assign>
-						<#if (gridFields?size gt 0 && gridFields?seq_contains(name)) || (gridFields?size == 0)>
-		                    <#if "${field.type}" == "SELECT">
-		                    	<#assign label>
-									<@spring.messageText "${name}.tinyList.label" "${name}.tinyList.label"/>
-								</#assign>
-	
-								<#if label?index_of("+") gt 0>
-									<#assign newLabel = ""/>
-									<#compress>
-									<#list label?split("+") as labelComponent>
-										<#if labelComponent?contains("\"") || labelComponent?contains("\'")>
-						    				<#assign newLabel>
-										 		${newLabel + labelComponent?replace("\"", "")?replace("\'", "")}<#t>
-						    				</#assign>
-						    			<#else>
-						    				<#assign newLabel>
-						    				<#--
-						    				 	${newLabel + item["${name}"]["${labelComponent?trim}"]!}<#t>
-						    				-->
-											</#assign>
-										</#if>
-									</#list>
-									</#compress>
-									${newLabel}
-								<#else>
-								<#--
-									${item["${name}"][label]}
-								-->
-								</#if>
-							<#else>
-								<@display.column property="${name}" />
-							</#if>
-						</#if>
-					</#if>
-				</#list>
-			</@display.table>
             
             	<table class="table table-bordered table-hover">
             	<thead>
@@ -98,9 +48,6 @@
 								<#assign name>
 									${field.name[field.name?string?last_index_of('.')+1..]}<#t>
 								</#assign>
-								<#--
-								<#if true>
-								-->
 								<#if (gridFields?size gt 0 && gridFields?seq_contains(name)) || (gridFields?size == 0)>
 									<td>
 				                    <#if "${field.type}" == "SELECT">
@@ -127,7 +74,6 @@
 										<#else>
 											${item["${name}"][label]}
 										</#if>
-	
 									<#else>
 										${item[name]}
 									</#if>
@@ -136,7 +82,8 @@
 							</#if>
 						</#list>
 						<td>
-							<a href="edit/${item["id"]}">Editar</a> <a onClick="removal(${item['id']}, this)">Excluir</a>
+							<a href="../../edit/${item["id"]}">Editar</a>
+							<a onClick="removal(${item['id']}, this)">Excluir</a>
 						</td>
             		</tr>
 					</#list>
@@ -147,7 +94,7 @@
             </div>
             <div class="form-group">
                 <div class="col-sm-12">
-					<a href="./">
+					<a href="../../">
 		                <button class="btn btn-primary">
 							<@spring.messageText "form.button.new" "form.button.new"/>
 						</button>

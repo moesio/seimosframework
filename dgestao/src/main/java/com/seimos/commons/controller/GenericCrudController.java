@@ -9,6 +9,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -63,6 +64,7 @@ public abstract class GenericCrudController<Entity> {
 	private static final Logger logger = LoggerFactory.getLogger(GenericCrudController.class);
 	private HashMap<Class<?>, Page> formCache = new HashMap<Class<?>, Page>();
 	private Class<Entity> entityClass;
+	private ReloadableResourceBundleMessageSource messageSource;
 	public Environment env;
 
 	public abstract GenericService<Entity> getService();
@@ -77,13 +79,18 @@ public abstract class GenericCrudController<Entity> {
 		this.env = env;
 	}
 
+	@Autowired
+	public void setMessageSource(ReloadableResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
 		binder.setValidator(getValidator());
 	}
 
 	public abstract GenericValidator<Entity> getValidator();
-	
+
 	private Page createPage(Model model) {
 		Page page = null;
 		// TODO Fazer um cache para diminuir o tempo da reflexão. 
@@ -124,7 +131,9 @@ public abstract class GenericCrudController<Entity> {
 				return new ModelAndView("redirect:./");
 			}
 			getService().create(entity);
-			return new ModelAndView("redirect:./grid");
+			return new ModelAndView("redirect:./grid/0/" + //
+					messageSource.getMessage(getEntitySimpleName().concat(".grid.page.size"), null, //
+							messageSource.getMessage("grid.page.size", null, "5", null), null));
 		} catch (Exception e) {
 			logger.error("Create throwns an exception for " + entity, e);
 			throw e;
@@ -218,9 +227,9 @@ public abstract class GenericCrudController<Entity> {
 		return "edit";
 	}
 
-	@RequestMapping(value = "/grid", method = RequestMethod.GET)
+	@RequestMapping(value = "/grid/{start}/{rows}", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
-	public String grid(@ModelAttribute Entity entity, Model model, Integer start, Integer rows) {
+	public String grid(@ModelAttribute Entity entity, Model model, @PathVariable Integer start, @PathVariable Integer rows) {
 		List<Entity> list = getService().find(entity, start, rows);
 		createPage(model);
 		model.addAttribute("list", list);
@@ -247,8 +256,10 @@ public abstract class GenericCrudController<Entity> {
 				return new ModelAndView("redirect:./edit/".concat(id));
 			}
 			getService().update(entity);
-//			redirect.addFlashAttribute(entity);
-			return new ModelAndView("redirect:./grid");
+			//			redirect.addFlashAttribute(entity);
+			return new ModelAndView("redirect:./grid/0/" + //
+					messageSource.getMessage(getEntitySimpleName().concat(".grid.page.size"), null, //
+							messageSource.getMessage("grid.page.size", null, "5", null), null));
 		} catch (Exception e) {
 			logger.error("Update exception for " + entity, e);
 			throw e;

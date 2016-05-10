@@ -75,12 +75,13 @@
 	window.removal = function(id, element) {
 		$.ajax({
 			type : "DELETE",
-			url : "remove/" + id,
+			url : "../../remove/" + id,
 			contentType : "application/json; charset=utf-8",
 			dataType : "json",
 			success : function(data) {
-				console.log('Removeu ' + id);
-				$(element).closest('tr').remove();
+//				console.log('Removeu ' + id);
+//				$(element).closest('tr').remove();
+				location.reload();
 			}
 		}).error(error).fail(error);
 	}

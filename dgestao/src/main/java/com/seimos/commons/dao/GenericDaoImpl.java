@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 import javax.persistence.Id;
+import javax.servlet.ServletContext;
 
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
@@ -35,6 +36,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.orm.hibernate4.support.HibernateDaoSupport;
+import org.springframework.web.context.ContextLoader;
 
 import com.seimos.commons.hibernate.CustomPropertyAliasProjection;
 import com.seimos.commons.hibernate.Filter;
@@ -132,6 +134,24 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 		} else {
 			listCriteria = createListCriteria(entity);
 		}
+		
+		try {
+			Long rows = (Long) listCriteria.setProjection(Projections.rowCount()).uniqueResult();
+			ServletContext context = ContextLoader.getCurrentWebApplicationContext().getServletContext();
+			context.setAttribute("rowCount", rows);
+			context.setAttribute("page", firstResult / maxResults + 1);
+			context.setAttribute("pageSize", firstResult / maxResults + 1);
+		} catch (Exception e) {
+			logger.debug("Pagination out of web context");
+		}
+		
+		
+		if (entity == null) {
+			listCriteria = listCriteria();
+		} else {
+			listCriteria = createListCriteria(entity);
+		}
+
 		if (firstResult != null) {
 			listCriteria.setFirstResult(firstResult);
 		}

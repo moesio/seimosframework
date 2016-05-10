@@ -22,10 +22,10 @@
 		<ul>
 			<li><a href="#"><spring:message code="app.menu.cadastro"/></a>
 				<ul>
-					<li><a href="${pageContext.request.contextPath}/genero/grid"><spring:message code="app.menu.cadastro.genero"/></a></li>
-					<li><a href="${pageContext.request.contextPath}/produto/grid"><spring:message code="app.menu.cadastro.produto"/></a></li>
-					<li><a href="${pageContext.request.contextPath}/fornecedor/grid"><spring:message code="app.menu.cadastro.fornecedor"/></a></li>
-					<li><a href="${pageContext.request.contextPath}/anything/grid"><spring:message code="app.menu.cadastro.anything"/></a></li>
+					<li><a href="${pageContext.request.contextPath}/genero/grid/0/5"><spring:message code="app.menu.cadastro.genero"/></a></li>
+					<li><a href="${pageContext.request.contextPath}/produto/grid/0/5"><spring:message code="app.menu.cadastro.produto"/></a></li>
+					<li><a href="${pageContext.request.contextPath}/fornecedor/grid/0/5"><spring:message code="app.menu.cadastro.fornecedor"/></a></li>
+					<li><a href="${pageContext.request.contextPath}/anything/grid/0/5"><spring:message code="app.menu.cadastro.anything"/></a></li>
 				</ul>
 			</li>
 		</ul>

@@ -102,6 +102,7 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 		Properties hibernateProperties = new Properties();
 		hibernateProperties.setProperty(ConfigKey.hibernate_hbm2ddl_auto.toString(), ConfigReader.getKey(ConfigKey.hibernate_hbm2ddl_auto));
 		hibernateProperties.setProperty(ConfigKey.hibernate_dialect.toString(), ConfigReader.getKey(ConfigKey.hibernate_dialect));
+		hibernateProperties.setProperty("hibernate.connection.release_mode", "auto");
 
 		LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
 		sessionFactory.setDataSource(dataSource());
