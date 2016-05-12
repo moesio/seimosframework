@@ -25,6 +25,7 @@ public class Initializer implements WebApplicationInitializer {
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 		context.setConfigLocation("com.seimos.commons.web.config,".concat(ConfigReader.getKey(ConfigKey.config_package)));
+		context.setDisplayName(ConfigReader.getKey(ConfigKey.display_name));
 		servletContext.addListener(new ContextLoaderListener(context));
 
 		Dynamic dispatcherServlet = servletContext.addServlet("dispatcher", new DispatcherServlet(context));
@@ -43,7 +44,7 @@ public class Initializer implements WebApplicationInitializer {
 			@Override
 			protected void applyCustomConfiguration(SiteMeshFilterBuilder builder) {
 				// TODO Inject from config.properties
-				builder.addDecoratorPath("/*", "/WEB-INF/decorators/theme.jsp").addExcludedPath("/index.*");
+				builder.addDecoratorPath("/*", ConfigReader.getKey(ConfigKey.decorator)).addExcludedPath("/index.*");
 			}
 		});
 		sitemeshFilter.addMappingForServletNames(null, true, "*");

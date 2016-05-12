@@ -8,8 +8,9 @@ public enum ConfigKey {
 	config_package {
 		@Override
 		public String getComment() {
-			return "Package where project configuration class stands\n" //
-					+ "Example: \n " + //
+			return "Comma separated packages where project configuration classes stand.\n" + //
+					"Every class must be unique name.\n " + //
+					"Example: \n " + //
 					"import org.springframework.context.annotation.ComponentScan;\n" + // 
 					"import org.springframework.context.annotation.Configuration;\n" + //
 					"\n" + //
@@ -89,6 +90,18 @@ public enum ConfigKey {
 		@Override
 		public String getComment() {
 			return "Comma separated places where views stands for being rendered";
+		}
+	},
+	decorator {
+		@Override
+		public String getComment() {
+			return "Full path for sitemesh decorator";
+		}
+	},
+	display_name {
+		@Override
+		public String getComment() {
+			return "Display name for context server";
 		}
 	};
 
