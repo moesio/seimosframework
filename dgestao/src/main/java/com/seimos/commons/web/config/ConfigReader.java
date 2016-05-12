@@ -20,7 +20,7 @@ public class ConfigReader {
 	 */
 	private static final String CONFIG_PROPERTIES_FILE_NAME = "config.properties";
 	private static Properties configProperties;
-	public static File configResource = new File(ConfigReader.class.getResource("/").getPath() + CONFIG_PROPERTIES_FILE_NAME);
+	private static File configResource = new File(ConfigReader.class.getResource("/").getPath() + CONFIG_PROPERTIES_FILE_NAME);
 
 	/**
 	 * @param key

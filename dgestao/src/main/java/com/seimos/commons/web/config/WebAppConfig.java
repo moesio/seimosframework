@@ -1,7 +1,6 @@
-package com.seimos.dgestao.config;
+package com.seimos.commons.web.config;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
@@ -9,7 +8,6 @@ import javax.sql.DataSource;
 
 import org.apache.tomcat.dbcp.dbcp.BasicDataSource;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.orm.hibernate4.HibernateExceptionTranslator;
@@ -26,11 +24,7 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerView;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
-import com.seimos.commons.web.config.ConfigKey;
-import com.seimos.commons.web.config.ConfigReader;
-import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
 
-import freemarker.ext.jsp.TaglibFactory.MetaInfTldSource;
 
 /**
  * @author moesio @ gmail.com
@@ -41,7 +35,6 @@ import freemarker.ext.jsp.TaglibFactory.MetaInfTldSource;
 @EnableTransactionManagement
 // TODO Inject package from config.properties
 //@PropertySource(value = "classpath:config.properties")
-@ComponentScan(basePackages = { "com.seimos.dgestao.controller", "com.seimos.dgestao.service", "com.seimos.dgestao.dao", "com.seimos.dgestao.validator", "com.seimos.commons.web.exception" })
 public class WebAppConfig extends WebMvcConfigurerAdapter {
 	
 	@Bean

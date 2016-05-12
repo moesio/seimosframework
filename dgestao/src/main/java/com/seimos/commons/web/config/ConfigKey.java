@@ -8,13 +8,21 @@ public enum ConfigKey {
 	config_package {
 		@Override
 		public String getComment() {
-			return "Package where project configuration class extending WebMvcConfigurerAdapter stands\n" //
-					+ "Example: \n"//
-					+ "  @org.springframework.context.annotation.Configuration\n" //
-					+ "  @org.springframework.web.servlet.config.annotation.EnableWebMvc\n"//
-					+ "  @org.springframework.context.annotation.ComponentScan(basePackages = { \"com.seimos.project.controller\",  \"com.seimos.project.service\",  \"com.seimos.project.dao\",  })\n" //
-					+ "  public class WebMvcConfig extends org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter\n"// 
-					+ "  {...}";
+			return "Package where project configuration class stands\n" //
+					+ "Example: \n " + //
+					"import org.springframework.context.annotation.ComponentScan;\n" + // 
+					"import org.springframework.context.annotation.Configuration;\n" + //
+					"\n" + //
+					"@Configuration\n" + //
+					"@ComponentScan(basePackages = {\n" + //
+					"		\"com.seimos.example.controller\",\n" + // 
+					"		\"com.seimos.example.service\", \n" + //
+					"		\"com.seimos.example.dao\", \n" + //
+					"		\"com.seimos.example.validator\", \n" + //
+					"		})\n" + //
+					"public class WebConfig {\n" + //
+					"			\n" + //
+					"}\n";
 		}
 	},
 
@@ -76,7 +84,8 @@ public enum ConfigKey {
 		public String getComment() {
 			return "Database dialect";
 		}
-	}, templatePathLoaders {
+	},
+	templatePathLoaders {
 		@Override
 		public String getComment() {
 			return "Comma separated places where views stands for being rendered";

@@ -24,13 +24,13 @@ public class Initializer implements WebApplicationInitializer {
 	 */
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-		context.setConfigLocation(ConfigReader.getKey(ConfigKey.config_package));
+		context.setConfigLocation("com.seimos.commons.web.config,".concat(ConfigReader.getKey(ConfigKey.config_package)));
 		servletContext.addListener(new ContextLoaderListener(context));
 
 		Dynamic dispatcherServlet = servletContext.addServlet("dispatcher", new DispatcherServlet(context));
 		dispatcherServlet.setLoadOnStartup(1);
 		dispatcherServlet.addMapping("/");
-		
+
 		FilterRegistration.Dynamic characterEncodingFilter = servletContext.addFilter("characterEncoding", new CharacterEncodingFilter());
 		characterEncodingFilter.setInitParameter("encoding", "UTF-8");
 		characterEncodingFilter.setInitParameter("forceEncoding", "true");
@@ -48,5 +48,5 @@ public class Initializer implements WebApplicationInitializer {
 		});
 		sitemeshFilter.addMappingForServletNames(null, true, "*");
 	}
-	
+
 }
