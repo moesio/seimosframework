@@ -1,0 +1,2 @@
+- Paginação de grid
+- Renderizar no edit/grid tipos de campos: date, double, boolean, collection
