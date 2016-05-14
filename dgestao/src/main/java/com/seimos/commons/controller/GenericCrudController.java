@@ -227,6 +227,12 @@ public abstract class GenericCrudController<Entity> {
 		return "edit";
 	}
 
+	@RequestMapping(value = "/grid", method = RequestMethod.GET)
+	@Transactional(readOnly = true)
+	public String grid(@ModelAttribute Entity entity, Model model) {
+		return "redirect:./grid/0/0";
+	}
+	
 	@RequestMapping(value = "/grid/{start}/{rows}", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
 	public String grid(@ModelAttribute Entity entity, Model model, @PathVariable Integer start, @PathVariable Integer rows) {

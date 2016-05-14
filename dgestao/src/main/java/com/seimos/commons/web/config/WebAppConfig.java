@@ -1,6 +1,7 @@
 package com.seimos.commons.web.config;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Properties;
 
@@ -24,8 +25,6 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerView;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
-
-
 /**
  * @author moesio @ gmail.com
  * @date Oct 20, 2014 12:12:37 AM
@@ -36,7 +35,7 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 // TODO Inject package from config.properties
 //@PropertySource(value = "classpath:config.properties")
 public class WebAppConfig extends WebMvcConfigurerAdapter {
-	
+
 	@Bean
 	public ViewResolver contentNegotiatingViewResolver(ContentNegotiationManager manager) {
 		ArrayList<ViewResolver> resolvers = new ArrayList<ViewResolver>();
@@ -63,20 +62,24 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 		configurer.enable();
 	}
 
+	public static void main(String[] args) {
+		new WebAppConfig().freemarkerConfigurer();
+	}
+	
 	@Bean
 	public FreeMarkerConfigurer freemarkerConfigurer() {
 		FreeMarkerConfigurer configurer = new FreeMarkerConfigurer();
-		// TODO Put paths in config.properties
-		configurer.setTemplateLoaderPaths(new String[] { "/WEB-INF/views/" });
+		
+		ArrayList<String> templateLoaderPaths = new ArrayList<String>();
+		templateLoaderPaths.add("classpath:/META-INF/views/");
+		templateLoaderPaths.addAll(Arrays.asList(ConfigReader.getKey(ConfigKey.viewPath).split(",")));
+		
+		configurer.setTemplateLoaderPaths(templateLoaderPaths.toArray(new String[templateLoaderPaths.size()]));
 		configurer.setDefaultEncoding("UTF-8");
 		Properties properties = new Properties();
 		properties.setProperty(freemarker.template.Configuration.AUTO_IMPORT_KEY, "/spring.ftl as spring");
 		configurer.setFreemarkerSettings(properties);
-		
-//		ArrayList a = new ArrayList();
-//		a.add("/Users/moesio/.m2/repository/displaytag/");
-//		configurer.getTaglibFactory().setClasspathTlds(a);
-		
+
 		return configurer;
 	}
 
@@ -119,12 +122,12 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 
 	@Bean
 	public ReloadableResourceBundleMessageSource messageSource() {
-		
+
 		String defaultLocale = ConfigReader.get("locale");
 		if (defaultLocale != null) {
 			Locale.setDefault(new Locale(defaultLocale));
 		}
-		
+
 		ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
 		messageSource.setBasename("classpath:messages");
 		messageSource.setCacheSeconds(1);

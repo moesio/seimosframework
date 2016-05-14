@@ -24,8 +24,8 @@ public class Initializer implements WebApplicationInitializer {
 	 */
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-		context.setConfigLocation("com.seimos.commons.web.config,".concat(ConfigReader.getKey(ConfigKey.config_package)));
-		context.setDisplayName(ConfigReader.getKey(ConfigKey.display_name));
+		context.setConfigLocation("com.seimos.commons.web.config,".concat(ConfigReader.getKey(ConfigKey.configPackage)));
+		context.setDisplayName(ConfigReader.getKey(ConfigKey.displayName));
 		servletContext.addListener(new ContextLoaderListener(context));
 
 		Dynamic dispatcherServlet = servletContext.addServlet("dispatcher", new DispatcherServlet(context));

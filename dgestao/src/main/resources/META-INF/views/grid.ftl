@@ -8,6 +8,8 @@
 </head>
 <body>
 ${rowCount!"ddd"}
+${currentPage!"1"}
+${pageSize!"0"}
     <div class="container-fluid">
         <div class="row clearfix">
             <div class="col-md-12 column">

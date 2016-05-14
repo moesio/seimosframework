@@ -139,12 +139,13 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 			Long rows = (Long) listCriteria.setProjection(Projections.rowCount()).uniqueResult();
 			ServletContext context = ContextLoader.getCurrentWebApplicationContext().getServletContext();
 			context.setAttribute("rowCount", rows);
-			context.setAttribute("page", firstResult / maxResults + 1);
-			context.setAttribute("pageSize", firstResult / maxResults + 1);
+			context.setAttribute("currentPage", firstResult / maxResults + 1);
+			context.setAttribute("pageSize", maxResults);
+		} catch (ArithmeticException e) {
+			logger.debug("maxResults = 0. Assumed 1.");
 		} catch (Exception e) {
 			logger.debug("Pagination out of web context");
 		}
-		
 		
 		if (entity == null) {
 			listCriteria = listCriteria();
@@ -156,6 +157,9 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 			listCriteria.setFirstResult(firstResult);
 		}
 		if (maxResults != null) {
+			if (maxResults == 0) {
+				maxResults = 1;
+			}
 			listCriteria.setMaxResults(maxResults);
 		}
 		

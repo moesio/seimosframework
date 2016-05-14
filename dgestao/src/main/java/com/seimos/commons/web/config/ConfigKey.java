@@ -5,7 +5,7 @@ package com.seimos.commons.web.config;
  * @date Sep 22, 2014 10:13:28 PM
  */
 public enum ConfigKey {
-	config_package {
+	configPackage {
 		@Override
 		public String getComment() {
 			return "Comma separated packages where project configuration classes stand.\n" + //
@@ -98,12 +98,16 @@ public enum ConfigKey {
 			return "Full path for sitemesh decorator";
 		}
 	},
-	display_name {
+	displayName {
 		@Override
 		public String getComment() {
 			return "Display name for context server";
 		}
-	};
+	}, viewPath {
+		@Override
+		public String getComment() {
+			return "Path to views, e.g., \"/WEB-INF/views/\"";
+		}};
 
 	/**
 	 * Shows explanation about key 
