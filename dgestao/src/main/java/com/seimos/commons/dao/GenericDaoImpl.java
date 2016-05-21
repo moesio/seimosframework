@@ -136,13 +136,13 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 		}
 		
 		try {
-			Long rows = (Long) listCriteria.setProjection(Projections.rowCount()).uniqueResult();
+			Integer rows = Integer.valueOf(listCriteria.setProjection(Projections.rowCount()).uniqueResult().toString());
 			ServletContext context = ContextLoader.getCurrentWebApplicationContext().getServletContext();
 			context.setAttribute("rowCount", rows);
 			context.setAttribute("currentPage", firstResult / maxResults + 1);
 			context.setAttribute("pageSize", maxResults);
-		} catch (ArithmeticException e) {
-			logger.debug("maxResults = 0. Assumed 1.");
+//		} catch (ArithmeticException e) {
+//			logger.debug("maxResults = 0. Assumed 1.");
 		} catch (Exception e) {
 			logger.debug("Pagination out of web context");
 		}

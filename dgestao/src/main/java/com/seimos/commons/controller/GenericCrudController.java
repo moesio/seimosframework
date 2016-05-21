@@ -25,12 +25,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.UrlBasedViewResolver;
 
 import com.seimos.commons.hibernate.Filter;
 import com.seimos.commons.hibernate.Filters;
 import com.seimos.commons.reflection.Reflection;
 import com.seimos.commons.service.GenericService;
 import com.seimos.commons.validator.GenericValidator;
+import com.seimos.commons.web.formbuilder.DataTable;
 import com.seimos.commons.web.formbuilder.Page;
 import com.seimos.commons.web.formbuilder.SelectOption;
 
@@ -112,6 +114,10 @@ public abstract class GenericCrudController<Entity> {
 		return StringUtils.uncapitalize(entityClass.getSimpleName());
 	}
 
+	private String getGridPageSize() {
+		return messageSource.getMessage(getEntitySimpleName().concat(".grid.page.size"), null, messageSource.getMessage("grid.page.size", null, "5", null), null);
+	}
+
 	/**
 	 * Creates a new record of type Model. A Model in json format must be sent in body request
 	 * 
@@ -128,12 +134,10 @@ public abstract class GenericCrudController<Entity> {
 			if (result.hasErrors()) {
 				redirect.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX + getEntitySimpleName(), result);
 				redirect.addFlashAttribute(getEntitySimpleName(), entity);
-				return new ModelAndView("redirect:./");
+				return new ModelAndView(UrlBasedViewResolver.REDIRECT_URL_PREFIX.concat("./"));
 			}
 			getService().create(entity);
-			return new ModelAndView("redirect:./grid/0/" + //
-					messageSource.getMessage(getEntitySimpleName().concat(".grid.page.size"), null, //
-							messageSource.getMessage("grid.page.size", null, "5", null), null));
+			return new ModelAndView(UrlBasedViewResolver.REDIRECT_URL_PREFIX.concat("./grid/0/" + getGridPageSize()));
 		} catch (Exception e) {
 			logger.error("Create throwns an exception for " + entity, e);
 			throw e;
@@ -227,15 +231,30 @@ public abstract class GenericCrudController<Entity> {
 		return "edit";
 	}
 
+	@RequestMapping(value = "/dataTable", method = RequestMethod.GET)
+	@Transactional(readOnly = true)
+	@ResponseBody
+	public DataTable<Entity> dataTable(@ModelAttribute Entity entity, Model model) {
+		DataTable<Entity> dataTable = new DataTable<Entity>();
+		dataTable.setDraw(1);
+		dataTable.setRecordsFiltered(3);
+		dataTable.setRecordsTotal(10);
+		dataTable.setData(getService().find(entity));
+		return dataTable;
+	}
+
 	@RequestMapping(value = "/grid", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
 	public String grid(@ModelAttribute Entity entity, Model model) {
-		return "redirect:./grid/0/0";
+		return UrlBasedViewResolver.REDIRECT_URL_PREFIX.concat("./grid/0/" + getGridPageSize());
 	}
-	
+
 	@RequestMapping(value = "/grid/{start}/{rows}", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
 	public String grid(@ModelAttribute Entity entity, Model model, @PathVariable Integer start, @PathVariable Integer rows) {
+		if (rows != null && rows == 0) {
+			rows = Integer.valueOf(getGridPageSize());
+		}
 		List<Entity> list = getService().find(entity, start, rows);
 		createPage(model);
 		model.addAttribute("list", list);
@@ -259,13 +278,11 @@ public abstract class GenericCrudController<Entity> {
 				redirect.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX + getEntitySimpleName(), result);
 				redirect.addFlashAttribute(getEntitySimpleName(), entity);
 				String id = Reflection.invoke(entity, Reflection.getIdField(entityClass).getName()).toString();
-				return new ModelAndView("redirect:./edit/".concat(id));
+				return new ModelAndView(UrlBasedViewResolver.REDIRECT_URL_PREFIX.concat("./edit/".concat(id)));
 			}
 			getService().update(entity);
 			//			redirect.addFlashAttribute(entity);
-			return new ModelAndView("redirect:./grid/0/" + //
-					messageSource.getMessage(getEntitySimpleName().concat(".grid.page.size"), null, //
-							messageSource.getMessage("grid.page.size", null, "5", null), null));
+			return new ModelAndView(UrlBasedViewResolver.REDIRECT_URL_PREFIX.concat("./grid/0/" + getGridPageSize()));
 		} catch (Exception e) {
 			logger.error("Update exception for " + entity, e);
 			throw e;

@@ -31,7 +31,17 @@
 						}
 					}).error(error);
 				});
-				
+
+				/*
+				$(".table").DataTable({
+					"bServerSide": true,
+					"bProcessing": true,
+					"sPaginationType": "full_numbers",
+					"sAjaxSource": "/dgestao/webjars/datatables/1.9.4/examples/ajax/sources/arrays.txt"
+					"sAjaxSource": "/dgestao/genero/dataTable",
+				});
+				*/
+
 			});
 
 	var breadcrumbClick = function() {
@@ -79,13 +89,13 @@
 			contentType : "application/json; charset=utf-8",
 			dataType : "json",
 			success : function(data) {
-//				console.log('Removeu ' + id);
-//				$(element).closest('tr').remove();
+				// console.log('Removeu ' + id);
+				// $(element).closest('tr').remove();
 				location.reload();
 			}
 		}).error(error).fail(error);
 	}
-	
+
 	window.submitForm = function(element) {
 		var form;
 		if (element.is('form')) {
@@ -94,7 +104,7 @@
 			form = element.parents('form');
 		}
 
-//		console.log(form.serializeArray());
+		// console.log(form.serializeArray());
 
 		var formSerializedResult = {}
 		$.each(form.serializeArray(), function(e) {
@@ -109,18 +119,18 @@
 			}
 		});
 
-//		console.log(JSON.stringify(formSerializedResult));
+		// console.log(JSON.stringify(formSerializedResult));
 
 		$.ajax({
 			type : "POST",
 			url : context + "createAjax",
 			contentType : "application/json; charset=utf-8",
 			dataType : "json",
-			 data : JSON.stringify(formSerializedResult),
-//			data : $.param($('form').serializeArray()),
+			data : JSON.stringify(formSerializedResult),
+			// data : $.param($('form').serializeArray()),
 			success : function(data) {
 				console.log('Com sucesso!');
-				//form.find('button[type="reset"]').click();
+				// form.find('button[type="reset"]').click();
 			}
 		}).error(error).fail(error);
 	}

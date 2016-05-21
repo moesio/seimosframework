@@ -19,6 +19,7 @@ import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
@@ -35,6 +36,8 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 // TODO Inject package from config.properties
 //@PropertySource(value = "classpath:config.properties")
 public class WebAppConfig extends WebMvcConfigurerAdapter {
+
+	private static final String[] RESOURCE_LOCATIONS = { "classpath:/META-INF/resources/", "classpath:/resources/", "classpath:/static/", "classpath:/public/" };
 
 	@Bean
 	public ViewResolver contentNegotiatingViewResolver(ContentNegotiationManager manager) {
@@ -65,15 +68,15 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 	public static void main(String[] args) {
 		new WebAppConfig().freemarkerConfigurer();
 	}
-	
+
 	@Bean
 	public FreeMarkerConfigurer freemarkerConfigurer() {
 		FreeMarkerConfigurer configurer = new FreeMarkerConfigurer();
-		
+
 		ArrayList<String> templateLoaderPaths = new ArrayList<String>();
-		templateLoaderPaths.add("classpath:/META-INF/views/");
 		templateLoaderPaths.addAll(Arrays.asList(ConfigReader.getKey(ConfigKey.viewPath).split(",")));
-		
+		templateLoaderPaths.add("classpath:/META-INF/views/");
+
 		configurer.setTemplateLoaderPaths(templateLoaderPaths.toArray(new String[templateLoaderPaths.size()]));
 		configurer.setDefaultEncoding("UTF-8");
 		Properties properties = new Properties();
@@ -135,4 +138,13 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 		return messageSource;
 	}
 
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		if (!registry.hasMappingForPattern("/webjars/**")) {
+			registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+		}
+//		if (!registry.hasMappingForPattern("/**")) {
+//			registry.addResourceHandler("/**").addResourceLocations(RESOURCE_LOCATIONS);
+//		}
+	}
 }

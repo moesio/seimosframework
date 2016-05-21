@@ -28,7 +28,7 @@ header {
 	top: 0;
 	background-color: #adceed;
 	width: 100%;
-	max-width: 960px;
+	max-width: 95%;
 	left: 0;
 	right: 0;
 	z-index: 1;
@@ -53,7 +53,7 @@ nav#breadcrumb a {
 
 section#main {
 	width: 100%;
-	max-width: 960px;
+	max-width: 95%;
 	margin: 140px auto 20px auto;
 	background-color: #daebfa;
 	min-height: calc(100vh - 160px);

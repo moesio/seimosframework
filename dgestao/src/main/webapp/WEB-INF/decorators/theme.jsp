@@ -13,6 +13,8 @@
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/bootstrap/css/bootstrap-theme.min.css" />
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/css/app.css" />
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/css/menu.css" />
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/webjars/datatables/1.9.4/media/css/jquery.dataTables_themeroller.css"/>
+
 <sitemesh:write property='head'></sitemesh:write>
 </head>
 <body>
@@ -46,6 +48,7 @@
 	<script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/angular.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/resources/bootstrap/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/ui-bootstrap-0.11.0.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/webjars/datatables/1.9.4/media/js/jquery.dataTables.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/app.js"></script>
 </body>
 </html>
