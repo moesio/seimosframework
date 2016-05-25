@@ -27,14 +27,14 @@ public class GeneroController extends GenericCrudController<Genero> {
 		return generoService;
 	}
 
-	@Autowired
-	public void setGeneroService(GeneroService generoService) {
-		this.generoService = generoService;
-	}
-
 	@Override
 	public GenericValidator<Genero> getValidator() {
 		return generoValidator;
+	}
+
+	@Autowired
+	public void setGeneroService(GeneroService generoService) {
+		this.generoService = generoService;
 	}
 
 	@Autowired

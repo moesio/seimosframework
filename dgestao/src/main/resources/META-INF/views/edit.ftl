@@ -106,13 +106,21 @@
 	                            </div>
 	                        </div>
 					    	<#break>
+							<#case "ENUM">
+					    	<#break>
+							<#case "DETAIL">
+					    	<#break>
 							<#case "DOUBLE">
 					    	<#break>
 							<#case "DATE">
 					    	<#break>
 							<#case "BOOLEAN">
-					    	<#break>
-							<#case "BOOLEAN">
+	                        <div class="form-group">
+	                        	<@label field=field/>
+	                            <div class="col-sm-10">
+								<@spring.formCheckbox "${field.name}" />
+	                            </div>
+	                        </div>
 					    	<#break>
 	                	</#switch>
 		                <div class="form-group">

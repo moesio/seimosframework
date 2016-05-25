@@ -7,6 +7,10 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.NamingStrategy;
+import net.bytebuddy.dynamic.DynamicType;
+
 import org.apache.tomcat.dbcp.dbcp.BasicDataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +30,8 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerView;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
+import com.seimos.commons.dao.GenericDaoImpl;
+
 /**
  * @author moesio @ gmail.com
  * @date Oct 20, 2014 12:12:37 AM
@@ -36,8 +42,6 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 // TODO Inject package from config.properties
 //@PropertySource(value = "classpath:config.properties")
 public class WebAppConfig extends WebMvcConfigurerAdapter {
-
-	private static final String[] RESOURCE_LOCATIONS = { "classpath:/META-INF/resources/", "classpath:/resources/", "classpath:/static/", "classpath:/public/" };
 
 	@Bean
 	public ViewResolver contentNegotiatingViewResolver(ContentNegotiationManager manager) {
@@ -143,8 +147,11 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 		if (!registry.hasMappingForPattern("/webjars/**")) {
 			registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
 		}
-//		if (!registry.hasMappingForPattern("/**")) {
-//			registry.addResourceHandler("/**").addResourceLocations(RESOURCE_LOCATIONS);
-//		}
+	}
+
+	@Bean
+	public Boolean generateCode() {
+		DynamicType.Unloaded<?> type = new ByteBuddy().subclass(GenericDaoImpl.class).name("com.seimos.commons.dao.AlgoDao").make();
+		return true;
 	}
 }

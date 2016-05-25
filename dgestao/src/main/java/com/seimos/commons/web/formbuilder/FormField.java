@@ -3,12 +3,14 @@ package com.seimos.commons.web.formbuilder;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.LinkedHashMap;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import org.hibernate.HibernateException;
 import org.slf4j.Logger;
@@ -19,14 +21,13 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.seimos.commons.reflection.Reflection;
 import com.seimos.commons.service.GenericService;
-import com.seimos.commons.validator.GenericValidator;
 
 /**
  * @author moesio @ gmail.com
  * @date Sep 28, 2014 12:50:36 PM
  */
 public class FormField implements Serializable {
-	
+
 	protected static final Logger logger = LoggerFactory.getLogger(FormField.class);
 	private T type;
 	private String label;
@@ -37,36 +38,36 @@ public class FormField implements Serializable {
 	private String idFieldName;
 
 	public enum T {
-		TEXT, INTEGER, SELECT, HIDDEN, BOOLEAN, DOUBLE, DATE;
+		BOOLEAN, DATE, DETAIL, DOUBLE, ENUM, HIDDEN, INTEGER, SELECT, TEXT;
 
-//		private String reference;
-//		private LinkedHashMap<String, String> map;
-//		private String idFieldName;
-//
-//		public String getReference() {
-//			return reference;
-//		}
-//
-//		public void setReference(String string) {
-//			this.reference = string;
-//		}
-//
-//		public String getIdFieldName() {
-//			return idFieldName;
-//		}
-//
-//		public void setIdFieldName(String idFieldName) {
-//			this.idFieldName = idFieldName;
-//		}
-//
-//		public LinkedHashMap<String, String> getMap() {
-//			return map;
-//		}
-//
-//		public void setMap(LinkedHashMap<String, String> map) {
-//			this.map = map;
-//		}
-//
+		//		private String reference;
+		//		private LinkedHashMap<String, String> map;
+		//		private String idFieldName;
+		//
+		//		public String getReference() {
+		//			return reference;
+		//		}
+		//
+		//		public void setReference(String string) {
+		//			this.reference = string;
+		//		}
+		//
+		//		public String getIdFieldName() {
+		//			return idFieldName;
+		//		}
+		//
+		//		public void setIdFieldName(String idFieldName) {
+		//			this.idFieldName = idFieldName;
+		//		}
+		//
+		//		public LinkedHashMap<String, String> getMap() {
+		//			return map;
+		//		}
+		//
+		//		public void setMap(LinkedHashMap<String, String> map) {
+		//			this.map = map;
+		//		}
+		//
 	}
 
 	@SuppressWarnings("unused")
@@ -80,7 +81,7 @@ public class FormField implements Serializable {
 			prefixBuilded.append(StringUtils.uncapitalize(prefix)).append(".");
 		}
 		prefixBuilded.append(className).append(".");
-		
+
 		if (Reflection.isEntity(field.getType())) {
 			JoinColumn columnAnnotation = field.getAnnotation(JoinColumn.class);
 			if (columnAnnotation != null) {
@@ -111,38 +112,41 @@ public class FormField implements Serializable {
 				mandatory = false;
 			}
 		}
-		
+
 		label = new StringBuilder(className).append(".page.field.").append(field.getName()).append(".label").toString();
 
 		Class<?> fieldType = field.getType();
-		if (field.isAnnotationPresent(ManyToOne.class)) {
+		if (field.isAnnotationPresent(Id.class)) {
+			type = T.HIDDEN;
+		} else if (field.isAnnotationPresent(ManyToOne.class)) {
 			type = T.SELECT;
 			idFieldName = Reflection.getIdField(field.getType()).getName();
 			populator = new LinkedHashMap<String, String>();
-			
+
 			try {
 				WebApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
 				GenericService<?> service = (GenericService<?>) context.getBean(StringUtils.uncapitalize(field.getType().getSimpleName()).concat("ServiceImpl"));
 				ArrayList<SelectOption> tinyList = service.tinyList();
-				
+
 				for (SelectOption option : tinyList) {
 					populator.put(option.getValue(), option.getText());
 				}
 			} catch (HibernateException e) {
 				logger.warn("field populator is not necessary while validation. Cautionn if this message appears while other operations.");
 			}
-			
-		} else if (field.isAnnotationPresent(Id.class)) {
-			type = T.HIDDEN;
 		} else {
-
-			if (fieldType == String.class) {
-				type = T.TEXT;
-			}
-			if (fieldType == Integer.class) {
-				type = T.INTEGER;
-			} else if (fieldType == Boolean.class) {
+			if (fieldType == Boolean.class) {
 				type = T.BOOLEAN;
+			} else if (fieldType == Calendar.class) {
+				type = T.DATE;
+			} else if (field.isAnnotationPresent(OneToMany.class)) {
+				type = T.DETAIL;
+			} else if (fieldType == Enum.class) {
+				type = T.ENUM;
+			} else if (fieldType == Integer.class) {
+				type = T.INTEGER;
+			} else if (fieldType == String.class) {
+				type = T.TEXT;
 			} else {
 				type = T.TEXT;
 			}
@@ -211,7 +215,7 @@ public class FormField implements Serializable {
 		this.idFieldName = idFieldName;
 		return this;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "FormField [type=" + type + ", label=" + label + ", name=" + name + ", length=" + length + ", mandatory=" + mandatory + "]";

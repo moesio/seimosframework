@@ -124,6 +124,11 @@ ${pageSize!"0"}
 										<#else>
 											${item["${name}"][label]}
 										</#if>
+									<#elseif "${field.type}" == "BOOLEAN">
+										<#assign domain>
+											<@spring.messageText "${field.label}.jsonDomain" ""/>
+										</#assign>
+										${domain?eval[item[name]?c]}
 									<#else>
 										${item[name]}
 									</#if>
