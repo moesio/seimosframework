@@ -7,14 +7,10 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import net.bytebuddy.ByteBuddy;
-import net.bytebuddy.NamingStrategy;
-import net.bytebuddy.dynamic.DynamicType;
-
-import org.apache.tomcat.dbcp.dbcp.BasicDataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate4.HibernateExceptionTranslator;
 import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
@@ -31,6 +27,9 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerView;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
 import com.seimos.commons.dao.GenericDaoImpl;
+
+import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.dynamic.DynamicType;
 
 /**
  * @author moesio @ gmail.com
@@ -92,7 +91,7 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 
 	@Bean
 	public DataSource dataSource() {
-		BasicDataSource dataSource = new BasicDataSource();
+		DriverManagerDataSource dataSource = new DriverManagerDataSource();
 		dataSource.setDriverClassName(ConfigReader.getKey(ConfigKey.datasource_jdbc_driverClassName));
 		dataSource.setUrl(ConfigReader.getKey(ConfigKey.datasource_jdbc_url));
 		dataSource.setUsername(ConfigReader.getKey(ConfigKey.datasource_jdbc_username));
@@ -103,8 +102,10 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 	@Bean
 	public LocalSessionFactoryBean sessionFactory() {
 		Properties hibernateProperties = new Properties();
-		hibernateProperties.setProperty(ConfigKey.hibernate_hbm2ddl_auto.toString(), ConfigReader.getKey(ConfigKey.hibernate_hbm2ddl_auto));
-		hibernateProperties.setProperty(ConfigKey.hibernate_dialect.toString(), ConfigReader.getKey(ConfigKey.hibernate_dialect));
+		hibernateProperties.setProperty(ConfigKey.hibernate_hbm2ddl_auto.toString(),
+				ConfigReader.getKey(ConfigKey.hibernate_hbm2ddl_auto));
+		hibernateProperties.setProperty(ConfigKey.hibernate_dialect.toString(),
+				ConfigReader.getKey(ConfigKey.hibernate_dialect));
 		hibernateProperties.setProperty("hibernate.connection.release_mode", "auto");
 
 		LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
@@ -151,7 +152,8 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 
 	@Bean
 	public Boolean generateCode() {
-		DynamicType.Unloaded<?> type = new ByteBuddy().subclass(GenericDaoImpl.class).name("com.seimos.commons.dao.AlgoDao").make();
+		DynamicType.Unloaded<?> type = new ByteBuddy().subclass(GenericDaoImpl.class)
+				.name("com.seimos.commons.dao.AlgoDao").make();
 		return true;
 	}
 }
