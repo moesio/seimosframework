@@ -5,12 +5,10 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Properties;
 
-import javax.sql.DataSource;
-
+import org.hibernate.SessionFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate4.HibernateExceptionTranslator;
 import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
@@ -89,37 +87,30 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 		return configurer;
 	}
 
-	@Bean
-	public DataSource dataSource() {
-		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		dataSource.setDriverClassName(ConfigReader.getKey(ConfigKey.datasource_jdbc_driverClassName));
-		dataSource.setUrl(ConfigReader.getKey(ConfigKey.datasource_jdbc_url));
-		dataSource.setUsername(ConfigReader.getKey(ConfigKey.datasource_jdbc_username));
-		dataSource.setPassword(ConfigReader.getKey(ConfigKey.datasource_jdbc_password));
-		return dataSource;
-	}
-
-	@Bean
-	public LocalSessionFactoryBean sessionFactory() {
+	private Properties getHibernateProperties() {
 		Properties hibernateProperties = new Properties();
 		hibernateProperties.setProperty(ConfigKey.hibernate_hbm2ddl_auto.toString(),
 				ConfigReader.getKey(ConfigKey.hibernate_hbm2ddl_auto));
 		hibernateProperties.setProperty(ConfigKey.hibernate_dialect.toString(),
 				ConfigReader.getKey(ConfigKey.hibernate_dialect));
 		hibernateProperties.setProperty("hibernate.connection.release_mode", "auto");
+		hibernateProperties.setProperty("hibernate.connection.datasource",
+				ConfigReader.getKey(ConfigKey.datasource_jndi_name));
+		return hibernateProperties;
+	}
 
+	@Bean
+	public LocalSessionFactoryBean sessionFactory() {
 		LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
-		sessionFactory.setDataSource(dataSource());
 		sessionFactory.setPackagesToScan(ConfigReader.getKey(ConfigKey.datasource_packageToScan).split(","));
-		sessionFactory.setHibernateProperties(hibernateProperties);
-
+		sessionFactory.setHibernateProperties(getHibernateProperties());
 		return sessionFactory;
 	}
 
 	@Bean
-	public HibernateTransactionManager transactionManager() {
+	public HibernateTransactionManager transactionManager(SessionFactory sessionFactory) {
 		HibernateTransactionManager transactionManager = new HibernateTransactionManager();
-		transactionManager.setSessionFactory(sessionFactory().getObject());
+		transactionManager.setSessionFactory(sessionFactory);
 		return transactionManager;
 	}
 
