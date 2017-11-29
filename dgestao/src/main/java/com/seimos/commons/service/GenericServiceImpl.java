@@ -27,7 +27,8 @@ public abstract class GenericServiceImpl<Domain, Dao extends GenericDao<Domain>>
 
 	@SuppressWarnings("unchecked")
 	public GenericServiceImpl() {
-		this.entityClass = (Class<Domain>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+		this.entityClass = (Class<Domain>) ((ParameterizedType) getClass().getGenericSuperclass())
+				.getActualTypeArguments()[0];
 	}
 
 	@Autowired
@@ -104,45 +105,46 @@ public abstract class GenericServiceImpl<Domain, Dao extends GenericDao<Domain>>
 		try {
 			listSize = Integer.valueOf(tinyListMaxSize);
 		} catch (NumberFormatException e) {
-			logger.debug("Property ".concat(entityName.concat(".tinyList.maxSize")).concat(" at resource bundle is not a number. No limit assummed."));
+			logger.debug("Property ".concat(entityName.concat(".tinyList.maxSize"))
+					.concat(" at resource bundle is not a number. No limit assummed."));
 		}
 
 		List<Domain> list;
 		if (listSize == null) {
 			list = find(filters);
 		} else {
-			list = find(filters, 1, listSize + 1);
+			list = find(filters, 0, listSize);
 		}
 		SelectOption selectOption;
 		for (Domain item : list) {
-			if (listSize != null && options.size() == listSize) {
-				String overloadMessage = messageSource.getMessage(entityName.concat(".tinyList.maxSize.overloaded"), null, null, null);
-				if (overloadMessage == null) {
-					overloadMessage = messageSource.getMessage("form.tinyList.maxSize.overloaded", null, null, null);
-				}
-				if (overloadMessage == null) {
-					overloadMessage = "List overload maxSize";
-				}
-				selectOption = new SelectOption().setValue("").setText(overloadMessage);
-			} else {
-				selectOption = new SelectOption().setValue(Reflection.invoke(item, value).toString());
+			selectOption = new SelectOption().setValue(Reflection.invoke(item, value).toString());
 
-				if (label == null) {
-					selectOption.setText(item.toString());
-				} else {
-					newLabel = new StringBuilder();
-					String[] split = label.split("\\+");
-					for (String labelComponent : split) {
-						if (labelComponent.contains("\"") || labelComponent.contains("\'")) {
-							newLabel.append(labelComponent.replace("\"", "").replace("\'", ""));
-						} else {
-							newLabel.append(Reflection.invoke(item, labelComponent.trim()));
-						}
+			if (label == null) {
+				selectOption.setText(item.toString());
+			} else {
+				newLabel = new StringBuilder();
+				String[] split = label.split("\\+");
+				for (String labelComponent : split) {
+					if (labelComponent.contains("\"") || labelComponent.contains("\'")) {
+						newLabel.append(labelComponent.replace("\"", "").replace("\'", ""));
+					} else {
+						newLabel.append(Reflection.invoke(item, labelComponent.trim()));
 					}
-					selectOption.setText(newLabel.toString());
 				}
+				selectOption.setText(newLabel.toString());
 			}
 			options.add(selectOption);
+		}
+		if (listSize != null && options.size() == listSize) {
+			String overloadMessage = messageSource.getMessage(entityName.concat(".tinyList.maxSize.overloaded"), null,
+					null, null);
+			if (overloadMessage == null) {
+				overloadMessage = messageSource.getMessage("form.tinyList.maxSize.overloaded", null, null, null);
+			}
+			if (overloadMessage == null) {
+				overloadMessage = "List overload maxSize";
+			}
+			options.add(new SelectOption().setValue("").setText(overloadMessage));
 		}
 		return options;
 	}
@@ -174,7 +176,7 @@ public abstract class GenericServiceImpl<Domain, Dao extends GenericDao<Domain>>
 	public List<Domain> find(Domain entity, Integer firstResult, Integer maxResult) {
 		return getDao().find(entity, firstResult, maxResult);
 	}
-	
+
 	public List<Domain> sortedFind(Domain entity, String... order) {
 		return getDao().sortedFind(entity, order);
 	}

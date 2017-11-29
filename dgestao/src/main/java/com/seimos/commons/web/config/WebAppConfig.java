@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.Set;
 
 import org.hibernate.SessionFactory;
 import org.springframework.context.annotation.Bean;
@@ -72,16 +73,17 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 
 	@Bean
 	public FreeMarkerConfigurer freemarkerConfigurer() {
-		FreeMarkerConfigurer configurer = new FreeMarkerConfigurer();
+		Properties properties = new Properties();
+		properties.setProperty(freemarker.template.Configuration.AUTO_IMPORT_KEY, "/spring.ftl as spring");
+		properties.setProperty(freemarker.template.Configuration.LOCALIZED_LOOKUP_KEY, "false");
 
 		ArrayList<String> templateLoaderPaths = new ArrayList<String>();
 		templateLoaderPaths.addAll(Arrays.asList(ConfigReader.getKey(ConfigKey.viewPath).split(",")));
 		templateLoaderPaths.add("classpath:/META-INF/views/");
 
+		FreeMarkerConfigurer configurer = new FreeMarkerConfigurer();
 		configurer.setTemplateLoaderPaths(templateLoaderPaths.toArray(new String[templateLoaderPaths.size()]));
 		configurer.setDefaultEncoding("UTF-8");
-		Properties properties = new Properties();
-		properties.setProperty(freemarker.template.Configuration.AUTO_IMPORT_KEY, "/spring.ftl as spring");
 		configurer.setFreemarkerSettings(properties);
 
 		return configurer;
@@ -96,6 +98,15 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 		hibernateProperties.setProperty("hibernate.connection.release_mode", "auto");
 		hibernateProperties.setProperty("hibernate.connection.datasource",
 				ConfigReader.getKey(ConfigKey.datasource_jndi_name));
+
+		Properties config = ConfigReader.getInstance();
+		Set<Object> keys = config.keySet();
+		for (Object key : keys) {
+			if (key.toString().startsWith("hibernate")) {
+				hibernateProperties.put(key, config.get(key));
+			}
+		}
+
 		return hibernateProperties;
 	}
 

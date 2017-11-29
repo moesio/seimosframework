@@ -20,7 +20,8 @@ public class ConfigReader {
 	 */
 	private static final String CONFIG_PROPERTIES_FILE_NAME = "config.properties";
 	private static Properties configProperties;
-	private static File configResource = new File(ConfigReader.class.getResource("/").getPath() + CONFIG_PROPERTIES_FILE_NAME);
+	private static File configResource = new File(
+			ConfigReader.class.getResource("/").getPath() + CONFIG_PROPERTIES_FILE_NAME);
 
 	/**
 	 * @param key
@@ -29,7 +30,8 @@ public class ConfigReader {
 	public static String getKey(ConfigKey key) {
 		String value = (String) getInstance().get(key.toString());
 		if (value == null) {
-			throw new ConfigKeyExcpectedException(CONFIG_PROPERTIES_FILE_NAME + " has not '" + key + "' key which is for\n" + key.getComment());
+			throw new ConfigKeyExcpectedException(
+					CONFIG_PROPERTIES_FILE_NAME + " has not '" + key + "' key which is for\n" + key.getComment());
 		}
 		return value;
 	}
@@ -42,7 +44,7 @@ public class ConfigReader {
 		return (String) getInstance().get(key);
 	}
 
-	private static Properties getInstance() {
+	public static Properties getInstance() {
 		if (configProperties == null) {
 			try {
 				configProperties = new Properties();
