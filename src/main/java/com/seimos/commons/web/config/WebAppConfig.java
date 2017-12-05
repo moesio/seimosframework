@@ -97,7 +97,7 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 				ConfigReader.getKey(ConfigKey.hibernate_dialect));
 		hibernateProperties.setProperty("hibernate.connection.release_mode", "auto");
 		hibernateProperties.setProperty("hibernate.connection.datasource",
-				ConfigReader.getKey(ConfigKey.datasource_jndi_name));
+				"java:comp/env/" + ConfigReader.getKey(ConfigKey.datasource_jndi_name));
 
 		Properties config = ConfigReader.getInstance();
 		Set<Object> keys = config.keySet();
@@ -154,6 +154,7 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 
 	@Bean
 	public Boolean generateCode() {
+		@SuppressWarnings("unused")
 		DynamicType.Unloaded<?> type = new ByteBuddy().subclass(GenericDaoImpl.class)
 				.name("com.seimos.commons.dao.AlgoDao").make();
 		return true;
