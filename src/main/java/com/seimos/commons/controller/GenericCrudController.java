@@ -64,6 +64,7 @@ import com.seimos.commons.web.formbuilder.SelectOption;
 public abstract class GenericCrudController<Entity> {
 
 	private static final Logger logger = LoggerFactory.getLogger(GenericCrudController.class);
+	@SuppressWarnings("unused")
 	private HashMap<Class<?>, Page> formCache = new HashMap<Class<?>, Page>();
 	private Class<Entity> entityClass;
 	private ReloadableResourceBundleMessageSource messageSource;
@@ -71,9 +72,9 @@ public abstract class GenericCrudController<Entity> {
 
 	public abstract GenericService<Entity> getService();
 
-	@SuppressWarnings("unchecked")
 	public GenericCrudController() {
-		this.entityClass = (Class<Entity>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+		this.entityClass = (Class<Entity>) ((ParameterizedType) getClass().getGenericSuperclass())
+				.getActualTypeArguments()[0];
 	}
 
 	@Autowired
@@ -115,7 +116,8 @@ public abstract class GenericCrudController<Entity> {
 	}
 
 	private String getGridPageSize() {
-		return messageSource.getMessage(getEntitySimpleName().concat(".grid.page.size"), null, messageSource.getMessage("grid.page.size", null, "5", null), null);
+		return messageSource.getMessage(getEntitySimpleName().concat(".grid.page.size"), null,
+				messageSource.getMessage("grid.page.size", null, "5", null), null);
 	}
 
 	/**
@@ -129,7 +131,8 @@ public abstract class GenericCrudController<Entity> {
 	@Transactional
 	//		@ExceptionHandler
 	// @ModelAttribute anotaded attribute MUST BE FOLLOWED by BindingResult attribute, else, error is thrown
-	public ModelAndView create(@Valid @ModelAttribute Entity entity, BindingResult result, RedirectAttributes redirect) throws Exception {
+	public ModelAndView create(@Valid @ModelAttribute Entity entity, BindingResult result, RedirectAttributes redirect)
+			throws Exception {
 		try {
 			if (result.hasErrors()) {
 				redirect.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX + getEntitySimpleName(), result);
@@ -251,7 +254,8 @@ public abstract class GenericCrudController<Entity> {
 
 	@RequestMapping(value = "/grid/{start}/{rows}", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
-	public String grid(@ModelAttribute Entity entity, Model model, @PathVariable Integer start, @PathVariable Integer rows) {
+	public String grid(@ModelAttribute Entity entity, Model model, @PathVariable Integer start,
+			@PathVariable Integer rows) {
 		if (rows != null && rows == 0) {
 			rows = Integer.valueOf(getGridPageSize());
 		}
@@ -272,7 +276,8 @@ public abstract class GenericCrudController<Entity> {
 	 */
 	@RequestMapping(value = "/update", method = RequestMethod.POST)
 	@Transactional
-	public ModelAndView update(@Valid @ModelAttribute Entity entity, BindingResult result, RedirectAttributes redirect) throws Exception {
+	public ModelAndView update(@Valid @ModelAttribute Entity entity, BindingResult result, RedirectAttributes redirect)
+			throws Exception {
 		try {
 			if (result.hasErrors()) {
 				redirect.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX + getEntitySimpleName(), result);

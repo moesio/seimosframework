@@ -25,11 +25,6 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerView;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
-import com.seimos.commons.dao.GenericDaoImpl;
-
-import net.bytebuddy.ByteBuddy;
-import net.bytebuddy.dynamic.DynamicType;
-
 /**
  * @author moesio @ gmail.com
  * @date Oct 20, 2014 12:12:37 AM
@@ -65,10 +60,6 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 	@Override
 	public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
 		configurer.enable();
-	}
-
-	public static void main(String[] args) {
-		new WebAppConfig().freemarkerConfigurer();
 	}
 
 	@Bean
@@ -152,11 +143,4 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 		}
 	}
 
-	@Bean
-	public Boolean generateCode() {
-		@SuppressWarnings("unused")
-		DynamicType.Unloaded<?> type = new ByteBuddy().subclass(GenericDaoImpl.class)
-				.name("com.seimos.commons.dao.AlgoDao").make();
-		return true;
-	}
 }

@@ -28,6 +28,7 @@ import com.seimos.commons.service.GenericService;
  */
 public class FormField implements Serializable {
 
+	private static final long serialVersionUID = 2748206626715269407L;
 	protected static final Logger logger = LoggerFactory.getLogger(FormField.class);
 	private T type;
 	private String label;
@@ -102,9 +103,9 @@ public class FormField implements Serializable {
 				length = columnAnnotation.length();
 				String nameInAnnotation = columnAnnotation.name();
 				if (nameInAnnotation != null && !nameInAnnotation.isEmpty()) {
-					name = prefixBuilded.append(nameInAnnotation).toString();
-				} else {
 					name = prefixBuilded.append(field.getName()).toString();
+				} else {
+					name = prefixBuilded.append(nameInAnnotation).toString();
 				}
 				mandatory = !columnAnnotation.nullable();
 			} else {
@@ -125,14 +126,16 @@ public class FormField implements Serializable {
 
 			try {
 				WebApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
-				GenericService<?> service = (GenericService<?>) context.getBean(StringUtils.uncapitalize(field.getType().getSimpleName()).concat("ServiceImpl"));
+				GenericService<?> service = (GenericService<?>) context
+						.getBean(StringUtils.uncapitalize(field.getType().getSimpleName()).concat("ServiceImpl"));
 				ArrayList<SelectOption> tinyList = service.tinyList();
 
 				for (SelectOption option : tinyList) {
 					populator.put(option.getValue(), option.getText());
 				}
 			} catch (HibernateException e) {
-				logger.warn("field populator is not necessary while validation. Cautionn if this message appears while other operations.");
+				logger.warn(
+						"field populator is not necessary while validation. Cautionn if this message appears while other operations.");
 			}
 		} else {
 			if (fieldType == Boolean.class) {
@@ -218,6 +221,7 @@ public class FormField implements Serializable {
 
 	@Override
 	public String toString() {
-		return "FormField [type=" + type + ", label=" + label + ", name=" + name + ", length=" + length + ", mandatory=" + mandatory + "]";
+		return "FormField [type=" + type + ", label=" + label + ", name=" + name + ", length=" + length + ", mandatory="
+				+ mandatory + "]";
 	}
 }

@@ -25,7 +25,6 @@ public abstract class GenericServiceImpl<Domain, Dao extends GenericDao<Domain>>
 
 	public abstract GenericDao<Domain> getDao();
 
-	@SuppressWarnings("unchecked")
 	public GenericServiceImpl() {
 		this.entityClass = (Class<Domain>) ((ParameterizedType) getClass().getGenericSuperclass())
 				.getActualTypeArguments()[0];

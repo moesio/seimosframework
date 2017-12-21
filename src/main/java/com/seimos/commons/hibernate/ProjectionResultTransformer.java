@@ -17,6 +17,7 @@ import org.hibernate.transform.ResultTransformer;
  * @date: 09/10/2007 15:50:34
  */
 public class ProjectionResultTransformer implements ResultTransformer {
+	private static final long serialVersionUID = -1476265883017980042L;
 	private Class<?> resultClass;
 
 	public ProjectionResultTransformer(Class<?> resultClass) {
@@ -31,7 +32,6 @@ public class ProjectionResultTransformer implements ResultTransformer {
 		return collection;
 	}
 
-	@SuppressWarnings("unchecked")
 	public Object transformTuple(Object[] values, String[] aliases) {
 		Object result = null;
 		try {
@@ -40,31 +40,28 @@ public class ProjectionResultTransformer implements ResultTransformer {
 				String alias = aliases[i];
 				if (alias != null) {
 					Object tuple = values[i];
-					
+
 					if (alias.contains(".")) {
 						String association = alias.substring(0, alias.indexOf("."));
 						Field field = result.getClass().getDeclaredField(association);
 						field.setAccessible(true);
 
 						String subAlias = alias.substring(alias.indexOf(".") + 1);
-						
+
 						ArrayList<Object> list = new ArrayList<Object>();
 						if (field.getType().isInstance(list)) {
 							Object instance;
-							if (field.get(result) == null)
-							{
+							if (field.get(result) == null) {
 								field.set(result, list);
 								Type type = ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
 								instance = ((Class<?>) type).newInstance();
 								list.add(instance);
-							} 
-							else {
+							} else {
 								list = (ArrayList<Object>) field.get(result);
 								instance = list.get(list.size() - 1);
 							}
 							set(instance, tuple, subAlias);
-						}
-						else {
+						} else {
 							Object instance;
 							if (field.get(result) == null) {
 								instance = field.getType().newInstance();
@@ -74,7 +71,7 @@ public class ProjectionResultTransformer implements ResultTransformer {
 							set(instance, tuple, subAlias);
 							field.set(result, instance);
 						}
-						
+
 					} else {
 						set(result, tuple, alias);
 					}
@@ -104,9 +101,9 @@ public class ProjectionResultTransformer implements ResultTransformer {
 	 */
 	private void set(Object result, Object tuple, String alias) {
 		try {
-			
+
 			String propertyRoot;
-			if (alias.contains(".")) { 
+			if (alias.contains(".")) {
 				propertyRoot = alias.substring(0, alias.indexOf("."));
 			} else {
 				propertyRoot = alias;

@@ -20,6 +20,7 @@ import com.seimos.commons.reflection.Reflection;
  */
 public class Page implements Serializable {
 
+	private static final long serialVersionUID = -3944698356746138568L;
 	private String title;
 	private List<FormField> formFields;
 	private Object data;
@@ -107,7 +108,8 @@ public class Page implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Page [title=" + title + ", formFields=" + formFields + ", data=" + data + ", properties=" + properties + ", root=" + entityName + "]";
+		return "Page [title=" + title + ", formFields=" + formFields + ", data=" + data + ", properties=" + properties
+				+ ", root=" + entityName + "]";
 	}
 
 }

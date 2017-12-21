@@ -50,16 +50,15 @@ import com.seimos.commons.hibernate.Filters;
 import com.seimos.commons.hibernate.ProjectionResultTransformer;
 import com.seimos.commons.reflection.Reflection;
 
-
 public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements GenericDao<Domain> {
 
 	protected static final Logger logger = LoggerFactory.getLogger(GenericDaoImpl.class);
 	private Class<Domain> entityClass;
 	protected HibernateTemplate hibernateTemplate;
 
-	@SuppressWarnings("unchecked")
 	public GenericDaoImpl() {
-		this.entityClass = (Class<Domain>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+		this.entityClass = (Class<Domain>) ((ParameterizedType) getClass().getGenericSuperclass())
+				.getActualTypeArguments()[0];
 	}
 
 	@Autowired
@@ -76,7 +75,7 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 	}
 
 	public Domain create(Domain entity) {
-//		throw new HibernateException("Não deu certo");
+		//		throw new HibernateException("Não deu certo");
 		getHibernateTemplate().save(entity);
 		return entity;
 	}
@@ -96,7 +95,8 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 
 	public void remove(Serializable id) throws InstantiationException, IllegalAccessException {
 		Domain entity = entityClass.newInstance();
-		getSessionFactory().getClassMetadata(getEntityClass()).setIdentifier(entity, id, (SessionImplementor) getSessionFactory().getCurrentSession());
+		getSessionFactory().getClassMetadata(getEntityClass()).setIdentifier(entity, id,
+				(SessionImplementor) getSessionFactory().getCurrentSession());
 		getHibernateTemplate().delete(entity);
 	}
 
@@ -104,7 +104,6 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 		getHibernateTemplate().delete(entity);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Domain> list() {
 		return listCriteria().list();
 	}
@@ -115,7 +114,6 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 		return criteria;
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Domain> find(Domain entity) {
 		if (entity == null) {
 			return list();
@@ -126,7 +124,6 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 		return list;
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Domain> find(Domain entity, Integer firstResult, Integer maxResults) {
 		Criteria listCriteria;
 		if (entity == null) {
@@ -134,19 +131,20 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 		} else {
 			listCriteria = createListCriteria(entity);
 		}
-		
+
 		try {
-			Integer rows = Integer.valueOf(listCriteria.setProjection(Projections.rowCount()).uniqueResult().toString());
+			Integer rows = Integer
+					.valueOf(listCriteria.setProjection(Projections.rowCount()).uniqueResult().toString());
 			ServletContext context = ContextLoader.getCurrentWebApplicationContext().getServletContext();
 			context.setAttribute("rowCount", rows);
 			context.setAttribute("currentPage", firstResult / maxResults + 1);
 			context.setAttribute("pageSize", maxResults);
-//		} catch (ArithmeticException e) {
-//			logger.debug("maxResults = 0. Assumed 1.");
+			//		} catch (ArithmeticException e) {
+			//			logger.debug("maxResults = 0. Assumed 1.");
 		} catch (Exception e) {
 			logger.debug("Pagination out of web context");
 		}
-		
+
 		if (entity == null) {
 			listCriteria = listCriteria();
 		} else {
@@ -162,12 +160,11 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 			}
 			listCriteria.setMaxResults(maxResults);
 		}
-		
+
 		List<Domain> list = listCriteria.list();
 		return list;
 	}
-	
-	@SuppressWarnings("unchecked")
+
 	public List<Domain> sortedFind(Domain entity, String... order) {
 		if (entity == null) {
 			return list();
@@ -188,7 +185,6 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 		return criteria.list();
 	}
 
-	@SuppressWarnings("unchecked")
 	public Domain findUnique(Domain entity) {
 		Criteria criteria = getCurrentSession().createCriteria(entity.getClass());
 		criteria.setResultTransformer(RootEntityResultTransformer.INSTANCE);
@@ -220,7 +216,6 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 		return find(filters, null, null);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Domain> find(List<Filter> filters, Integer firstResult, Integer maxResult) {
 		Criteria criteria = getCurrentSession().createCriteria(getEntityClass());
 		boolean usingFunction = false;
@@ -296,7 +291,8 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 								proj.append(aliasArray[y]);
 							}
 						}
-						if (!paths.contains(proj.toString()) && !Reflection.isEmbedded(getEntityClass(), proj.toString())) {
+						if (!paths.contains(proj.toString())
+								&& !Reflection.isEmbedded(getEntityClass(), proj.toString())) {
 							// impede a duplicação de aliases
 							paths.add(proj.toString());
 							String criteriaAlias = proj.toString().replace(".", "_");
@@ -308,7 +304,8 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 						}
 					}
 
-					String alias = Reflection.isEmbedded(getEntityClass(), associationPath) ? associationPath : associationPath.replace(".", "_");
+					String alias = Reflection.isEmbedded(getEntityClass(), associationPath) ? associationPath
+							: associationPath.replace(".", "_");
 					String attrib = attributePath.substring(attributePath.lastIndexOf(".") + 1);
 					String propertyName = alias + "." + attrib;
 
@@ -385,7 +382,8 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 		return list;
 	}
 
-	private void addFiltersFromCollectionFields(ListIterator<Filter> filtersIterator, Class<Domain> clazz, String attributePath) {
+	private void addFiltersFromCollectionFields(ListIterator<Filter> filtersIterator, Class<Domain> clazz,
+			String attributePath) {
 		try {
 			filtersIterator.next();
 			Field field = clazz.getDeclaredField(attributePath);
@@ -455,53 +453,63 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 			switch (condition) {
 			case AND:
 				if (filter.getFilters() == null || filter.getFilters().getClass() != Filter[].class) {
-					throw new IllegalArgumentException("Filters should be set for Condition.AND. Use Filter(Condition condition, Filter... filters) constructor");
+					throw new IllegalArgumentException(
+							"Filters should be set for Condition.AND. Use Filter(Condition condition, Filter... filters) constructor");
 				}
-				criterion = Restrictions.and(createFilterRestriction(filter.getFilters()[0], filter.getFilters()[0].getAttribute()),
+				criterion = Restrictions.and(
+						createFilterRestriction(filter.getFilters()[0], filter.getFilters()[0].getAttribute()),
 						createFilterRestriction(filter.getFilters()[1], filter.getFilters()[1].getAttribute()));
 				break;
 
 			case OR:
 				if (filter.getFilters() == null || filter.getFilters().getClass() != Filter[].class) {
-					throw new IllegalArgumentException("Filters should be set for Condition.OR. Use Filter(Condition condition, Filter... filters) constructor");
+					throw new IllegalArgumentException(
+							"Filters should be set for Condition.OR. Use Filter(Condition condition, Filter... filters) constructor");
 				}
-				criterion = Restrictions.or(createFilterRestriction(filter.getFilters()[0], filter.getFilters()[0].getAttribute()),
+				criterion = Restrictions.or(
+						createFilterRestriction(filter.getFilters()[0], filter.getFilters()[0].getAttribute()),
 						createFilterRestriction(filter.getFilters()[1], filter.getFilters()[1].getAttribute()));
 				break;
 
 			case BETWEEN:
 				if (value == null) {
-					throw new IllegalArgumentException("A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
-							+ filter.getCondition());
+					throw new IllegalArgumentException(
+							"A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
+									+ filter.getCondition());
 				}
 				try {
 					criterion = Restrictions.between(propertyName, ((Object[]) value)[0], ((Object[]) value)[1]);
 				} catch (IllegalArgumentException e) {
-					throw new IllegalArgumentException("\"" + value.toString() + "\" is " + value.getClass() + ". It must be of type Object[]");
+					throw new IllegalArgumentException(
+							"\"" + value.toString() + "\" is " + value.getClass() + ". It must be of type Object[]");
 				}
 				break;
 
 			case ENDS_WITH:
 				if (value == null) {
-					throw new IllegalArgumentException("A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
-							+ filter.getCondition());
+					throw new IllegalArgumentException(
+							"A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
+									+ filter.getCondition());
 				}
 				try {
 					criterion = Restrictions.ilike(propertyName, (String) value, MatchMode.END);
 				} catch (IllegalArgumentException e) {
-					throw new IllegalArgumentException("\"" + value.toString() + "\" is " + value.getClass() + ". It must be of type String");
+					throw new IllegalArgumentException(
+							"\"" + value.toString() + "\" is " + value.getClass() + ". It must be of type String");
 				}
 				break;
 
 			case ENDS_WITH_CASE_SENSITIVE:
 				if (value == null) {
-					throw new IllegalArgumentException("A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
-							+ filter.getCondition());
+					throw new IllegalArgumentException(
+							"A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
+									+ filter.getCondition());
 				}
 				try {
 					criterion = Restrictions.like(propertyName, (String) value, MatchMode.END);
 				} catch (IllegalArgumentException e) {
-					throw new IllegalArgumentException("\"" + value.toString() + "\" is " + value.getClass() + ". It must be of type String");
+					throw new IllegalArgumentException(
+							"\"" + value.toString() + "\" is " + value.getClass() + ". It must be of type String");
 				}
 				break;
 
@@ -509,8 +517,9 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 				if (value == null) {
 					// TODO Verificar se é possível comparar com string vazia
 					// value = "";
-					throw new IllegalArgumentException("A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
-							+ filter.getCondition());
+					throw new IllegalArgumentException(
+							"A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
+									+ filter.getCondition());
 				}
 				if (value.getClass() == String.class) {
 					criterion = Restrictions.eq(propertyName, (String) value);
@@ -521,166 +530,193 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 
 			case EQ_PROPERTY:
 				if (value == null) {
-					throw new IllegalArgumentException("A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
-							+ filter.getCondition());
+					throw new IllegalArgumentException(
+							"A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
+									+ filter.getCondition());
 				}
 				try {
 					criterion = Restrictions.eqProperty(propertyName, (String) value);
 				} catch (IllegalArgumentException e) {
-					throw new IllegalArgumentException("\"" + value.toString() + "\" is not an attribute from " + getEntityClass().toString());
+					throw new IllegalArgumentException(
+							"\"" + value.toString() + "\" is not an attribute from " + getEntityClass().toString());
 				}
 
 			case EQUALS_CASE_INSENSITIVE:
 				if (value == null) {
-					throw new IllegalArgumentException("A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
-							+ filter.getCondition());
+					throw new IllegalArgumentException(
+							"A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
+									+ filter.getCondition());
 				}
 				try {
 					criterion = Restrictions.ilike(propertyName, (String) value, MatchMode.EXACT);
 				} catch (IllegalArgumentException e) {
-					throw new IllegalArgumentException("\"" + value.toString() + "\" is " + value.getClass() + ". It must be of type String");
+					throw new IllegalArgumentException(
+							"\"" + value.toString() + "\" is " + value.getClass() + ". It must be of type String");
 				}
 				break;
 
 			case GREATER:
 				if (value == null) {
-					throw new IllegalArgumentException("A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
-							+ filter.getCondition());
+					throw new IllegalArgumentException(
+							"A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
+									+ filter.getCondition());
 				}
 				criterion = Restrictions.gt(propertyName, value);
 				break;
 
 			case GREATER_THAN_PROPERTY:
 				if (value == null) {
-					throw new IllegalArgumentException("A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
-							+ filter.getCondition());
+					throw new IllegalArgumentException(
+							"A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
+									+ filter.getCondition());
 				}
 				try {
 					criterion = Restrictions.gtProperty(propertyName, (String) value);
 				} catch (IllegalArgumentException e) {
-					throw new IllegalArgumentException("\"" + value.toString() + "\" is not an attribute from " + getEntityClass().toString());
+					throw new IllegalArgumentException(
+							"\"" + value.toString() + "\" is not an attribute from " + getEntityClass().toString());
 				}
 				break;
 
 			case GREATER_OR_EQUALS:
 				if (value == null) {
-					throw new IllegalArgumentException("A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
-							+ filter.getCondition());
+					throw new IllegalArgumentException(
+							"A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
+									+ filter.getCondition());
 				}
 				criterion = Restrictions.ge(propertyName, value);
 				break;
 
 			case GREATER_OR_EQUALS_THAN_PROPERTY:
 				if (value == null) {
-					throw new IllegalArgumentException("A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
-							+ filter.getCondition());
+					throw new IllegalArgumentException(
+							"A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
+									+ filter.getCondition());
 				}
 				try {
 					criterion = Restrictions.geProperty(propertyName, (String) value);
 				} catch (IllegalArgumentException e) {
-					throw new IllegalArgumentException("\"" + value.toString() + "\" is not an attribute from " + getEntityClass().toString());
+					throw new IllegalArgumentException(
+							"\"" + value.toString() + "\" is not an attribute from " + getEntityClass().toString());
 				}
 				break;
 
 			case IN:
 				if (value == null) {
-					throw new IllegalArgumentException("A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
-							+ filter.getCondition());
+					throw new IllegalArgumentException(
+							"A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
+									+ filter.getCondition());
 				}
 				try {
 					criterion = Restrictions.in(propertyName, (Object[]) value);
 				} catch (IllegalArgumentException e) {
-					throw new IllegalArgumentException("\"" + value.toString() + "\" is " + value.getClass() + ". It must be of type Object[]");
+					throw new IllegalArgumentException(
+							"\"" + value.toString() + "\" is " + value.getClass() + ". It must be of type Object[]");
 				}
 				break;
 
 			case LESS:
 				if (value == null) {
-					throw new IllegalArgumentException("A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
-							+ filter.getCondition());
+					throw new IllegalArgumentException(
+							"A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
+									+ filter.getCondition());
 				}
 				criterion = Restrictions.lt(propertyName, value);
 				break;
 			case LESS_THAN_PROPERTY:
 				if (value == null) {
-					throw new IllegalArgumentException("A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
-							+ filter.getCondition());
+					throw new IllegalArgumentException(
+							"A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
+									+ filter.getCondition());
 				}
 				try {
 					criterion = Restrictions.ltProperty(propertyName, (String) value);
 				} catch (IllegalArgumentException e) {
-					throw new IllegalArgumentException("\"" + value.toString() + "\" is not an attribute from " + getEntityClass().toString());
+					throw new IllegalArgumentException(
+							"\"" + value.toString() + "\" is not an attribute from " + getEntityClass().toString());
 				}
 				break;
 			case LESS_OR_EQUALS:
 				if (value == null) {
-					throw new IllegalArgumentException("A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
-							+ filter.getCondition());
+					throw new IllegalArgumentException(
+							"A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
+									+ filter.getCondition());
 				}
 				criterion = Restrictions.le(propertyName, value);
 				break;
 			case LESS_OR_EQUALS_THAN_PROPERTY:
 				if (value == null) {
-					throw new IllegalArgumentException("A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
-							+ filter.getCondition());
+					throw new IllegalArgumentException(
+							"A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
+									+ filter.getCondition());
 				}
 				try {
 					criterion = Restrictions.leProperty(propertyName, (String) value);
 				} catch (IllegalArgumentException e) {
-					throw new IllegalArgumentException("\"" + value.toString() + "\" is not an attribute from " + getEntityClass().toString());
+					throw new IllegalArgumentException(
+							"\"" + value.toString() + "\" is not an attribute from " + getEntityClass().toString());
 				}
 				break;
 			case NOT_EQUALS:
 				if (value == null) {
-					throw new IllegalArgumentException("A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
-							+ filter.getCondition());
+					throw new IllegalArgumentException(
+							"A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
+									+ filter.getCondition());
 				}
 				criterion = Restrictions.ne(propertyName, value);
 				break;
 			case NOT_IN:
 				if (value == null) {
-					throw new IllegalArgumentException("A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
-							+ filter.getCondition());
+					throw new IllegalArgumentException(
+							"A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
+									+ filter.getCondition());
 				}
 				try {
 					criterion = Restrictions.not(Restrictions.in(propertyName, (Object[]) value));
 				} catch (IllegalArgumentException e) {
-					throw new IllegalArgumentException("\"" + value.toString() + "\" is " + value.getClass() + ". It must be of type Object[]");
+					throw new IllegalArgumentException(
+							"\"" + value.toString() + "\" is " + value.getClass() + ". It must be of type Object[]");
 				}
 				break;
 			case NOT_NULL:
 				if (value != null) {
-					throw new IllegalArgumentException("\"" + value.toString() + "\" should not be set. Use Filter(String attribute, Condition condition) constructor");
+					throw new IllegalArgumentException("\"" + value.toString()
+							+ "\" should not be set. Use Filter(String attribute, Condition condition) constructor");
 				}
 				criterion = Restrictions.isNotNull(propertyName);
 				break;
 			case NULL:
 				if (value != null) {
-					throw new IllegalArgumentException("\"" + value.toString() + "\" should not be set. Use Filter(String attribute, Condition condition) constructor");
+					throw new IllegalArgumentException("\"" + value.toString()
+							+ "\" should not be set. Use Filter(String attribute, Condition condition) constructor");
 				}
 				criterion = Restrictions.isNull(propertyName);
 				break;
 			case STARTS_WITH:
 				if (value == null) {
-					throw new IllegalArgumentException("A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
-							+ filter.getCondition());
+					throw new IllegalArgumentException(
+							"A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
+									+ filter.getCondition());
 				}
 				try {
 					criterion = Restrictions.ilike(propertyName, (String) value, MatchMode.START);
 				} catch (IllegalArgumentException e) {
-					throw new IllegalArgumentException("\"" + value.toString() + "\" is " + value.getClass() + ". It must be of type String");
+					throw new IllegalArgumentException(
+							"\"" + value.toString() + "\" is " + value.getClass() + ". It must be of type String");
 				}
 				break;
 
 			case STARTS_WITH_CASE_SENSITIVE:
 				if (value == null) {
-					throw new IllegalArgumentException("A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
-							+ filter.getCondition());
+					throw new IllegalArgumentException(
+							"A value must be set. Constructor Filter(String attribute, Object value, Condition condition) is expected for Condition."
+									+ filter.getCondition());
 				}
 				try {
 					criterion = Restrictions.like(propertyName, (String) value, MatchMode.START);
 				} catch (IllegalArgumentException e) {
-					throw new IllegalArgumentException("\"" + value.toString() + "\" is " + value.getClass() + ". It must be of type String");
+					throw new IllegalArgumentException(
+							"\"" + value.toString() + "\" is " + value.getClass() + ". It must be of type String");
 				}
 				break;
 			case NOT_ENDS_WITH:
