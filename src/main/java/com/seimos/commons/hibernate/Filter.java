@@ -1,7 +1,5 @@
 package com.seimos.commons.hibernate;
 
-import java.util.Arrays;
-
 import org.hibernate.sql.JoinType;
 
 public class Filter {
@@ -306,8 +304,9 @@ public class Filter {
 
 	public Filter(String attribute, Condition condition) throws Exception {
 		if (!condition.equals(Condition.NULL) && !condition.equals(Condition.NOT_NULL)) {
-			throw new Exception("Apenas " + Condition.NULL + " e " + Condition.NOT_NULL + " são aceitas sem parâmetros.\n" //
-					+ "Use Filter(String, Object, Condition)");
+			throw new Exception(
+					"Apenas " + Condition.NULL + " e " + Condition.NOT_NULL + " são aceitas sem parâmetros.\n" //
+							+ "Use Filter(String, Object, Condition)");
 		}
 
 		setAttribute(attribute);
