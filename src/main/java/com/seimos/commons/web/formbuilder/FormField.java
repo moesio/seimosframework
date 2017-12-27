@@ -103,9 +103,9 @@ public class FormField implements Serializable {
 				length = columnAnnotation.length();
 				String nameInAnnotation = columnAnnotation.name();
 				if (nameInAnnotation != null && !nameInAnnotation.isEmpty()) {
-					name = prefixBuilded.append(field.getName()).toString();
-				} else {
 					name = prefixBuilded.append(nameInAnnotation).toString();
+				} else {
+					name = prefixBuilded.append(field.getName()).toString();
 				}
 				mandatory = !columnAnnotation.nullable();
 			} else {
