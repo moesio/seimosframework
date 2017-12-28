@@ -259,6 +259,7 @@ public abstract class GenericCrudController<Entity> {
 		if (rows != null && rows == 0) {
 			rows = Integer.valueOf(getGridPageSize());
 		}
+		// TODO Define a way of sorting fields
 		List<Entity> list = getService().find(entity, start, rows);
 		createPage(model);
 		model.addAttribute("list", list);
