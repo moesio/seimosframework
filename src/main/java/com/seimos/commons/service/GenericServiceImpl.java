@@ -72,13 +72,13 @@ public abstract class GenericServiceImpl<Domain, Dao extends GenericDao<Domain>>
 		StringBuilder newLabel;
 		Filters filters = new Filters();
 
-		if (value == null) {
+		if (value == null || value.isEmpty()) {
 			logger.debug("There's no key \"" + entityName.concat(".tinyList.value") + "\" in message resource bundle.");
 			value = Reflection.getIdField(entityClass).getName();
 		}
 		filters.add(new Filter(value));
 
-		if (label == null) {
+		if (label == null || label.isEmpty()) {
 			logger.debug("There's no key \"" + entityName.concat(".tinyList.label") + "\" in message resource bundle.");
 			filters.add(new Filter("*"));
 		} else {
@@ -91,14 +91,14 @@ public abstract class GenericServiceImpl<Domain, Dao extends GenericDao<Domain>>
 		}
 
 		String sortBy = messageSource.getMessage(entityName.concat(".tinyList.sortBy"), null, null, null);
-		if (sortBy != null) {
+		if (sortBy != null && !sortBy.isEmpty()) {
 			filters.add(new Filter(sortBy, Filter.Order.ASC));
 		}
 
 		ArrayList<SelectOption> options = new ArrayList<SelectOption>();
 		Integer listSize = null;
 		String tinyListMaxSize = messageSource.getMessage(entityName.concat(".tinyList.maxSize"), null, null, null);
-		if (tinyListMaxSize == null) {
+		if (tinyListMaxSize == null || tinyListMaxSize.isEmpty()) {
 			tinyListMaxSize = messageSource.getMessage("form.tinyList.maxSize", null, null, null);
 		}
 		try {
@@ -137,10 +137,10 @@ public abstract class GenericServiceImpl<Domain, Dao extends GenericDao<Domain>>
 		if (listSize != null && options.size() == listSize) {
 			String overloadMessage = messageSource.getMessage(entityName.concat(".tinyList.maxSize.overloaded"), null,
 					null, null);
-			if (overloadMessage == null) {
+			if (overloadMessage == null || overloadMessage.isEmpty()) {
 				overloadMessage = messageSource.getMessage("form.tinyList.maxSize.overloaded", null, null, null);
 			}
-			if (overloadMessage == null) {
+			if (overloadMessage == null || overloadMessage.isEmpty()) {
 				overloadMessage = "List overload maxSize";
 			}
 			options.add(new SelectOption().setValue("").setText(overloadMessage));

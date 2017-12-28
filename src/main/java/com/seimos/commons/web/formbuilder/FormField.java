@@ -125,6 +125,7 @@ public class FormField implements Serializable {
 			populator = new LinkedHashMap<String, String>();
 
 			try {
+				// FIXME Perharps searching by @Service annotated class whose parameters is field.getType() is better thant hardcoding ...ServiceImpl
 				WebApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
 				GenericService<?> service = (GenericService<?>) context
 						.getBean(StringUtils.uncapitalize(field.getType().getSimpleName()).concat("ServiceImpl"));
