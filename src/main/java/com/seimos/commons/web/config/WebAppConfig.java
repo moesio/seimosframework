@@ -5,11 +5,16 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.core.type.filter.RegexPatternTypeFilter;
 import org.springframework.orm.hibernate5.HibernateExceptionTranslator;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
@@ -25,6 +30,8 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerView;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
+import com.seimos.commons.reflection.LayerGenerator;
+
 /**
  * @author moesio @ gmail.com
  * @date Oct 20, 2014 12:12:37 AM
@@ -35,6 +42,72 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 // TODO Inject package from config.properties
 //@PropertySource(value = "classpath:config.properties")
 public class WebAppConfig extends WebMvcConfigurerAdapter {
+
+	//	static {
+	//		String[] domainPackages = ConfigReader.getKey(ConfigKey.datasource_packageToScan).split(",");
+	//		for (String packageName : domainPackages) {
+	//			ClassLoader loader = Thread.currentThread().getContextClassLoader();
+	//			try {
+	//				Enumeration<URL> resources = loader.getResources(packageName.replace(".", "/"));
+	//				ArrayList<File> dirs = new ArrayList<File>();
+	//				while (resources.hasMoreElements()) {
+	//					URL url = resources.nextElement();
+	//					dirs.add(new File(url.getFile()));
+	//					//					System.out.println(file);
+	//				}
+	//				for (File dir : dirs) {
+	//					List<Class<?>> classes = findClasses(dir, packageName);
+	//					for (Class<?> clazz : classes) {
+	//						LayerGenerator.generateLayers(clazz);
+	//					}
+	//					//					generateLayers(findClasses(dir, packageName), packageName);
+	//				}
+	//			} catch (IOException e) {
+	//				// TODO Auto-generated catch block
+	//				e.printStackTrace();
+	//			} catch (ClassNotFoundException e) {
+	//				// TODO Auto-generated catch block
+	//				e.printStackTrace();
+	//			}
+	//		}
+	//	}
+	//
+	//	private static List<Class<?>> findClasses(File dir, String packageName) throws ClassNotFoundException {
+	//		ArrayList<Class<?>> classes = new ArrayList<Class<?>>();
+	//		if (!dir.exists()) {
+	//			return classes;
+	//		}
+	//		File[] listFiles = dir.listFiles();
+	//		for (File file : listFiles) {
+	//			if (file.isDirectory()) {
+	//				assert !file.getName().contains(".");
+	//				classes.addAll(findClasses(file, packageName));
+	//			} else if (file.getName().endsWith(".class")) {
+	//				classes.add(Class.forName(
+	//						packageName.concat(".").concat(file.getName().substring(0, file.getName().length() - 6))));
+	//			}
+	//		}
+	//		return classes;
+	//	}
+
+	static {
+		final ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(
+				false);
+		String[] domainPackages = ConfigReader.getKey(ConfigKey.datasource_packageToScan).split(",");
+		provider.addIncludeFilter(new RegexPatternTypeFilter(Pattern.compile(".*")));
+
+		for (String basePackage : domainPackages) {
+			Set<BeanDefinition> classes = provider.findCandidateComponents(basePackage);
+			for (BeanDefinition bean : classes) {
+				try {
+					Class<?> clazz = Class.forName(bean.getBeanClassName());
+					LayerGenerator.generateLayers(clazz);
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 
 	@Bean
 	public ViewResolver contentNegotiatingViewResolver(ContentNegotiationManager manager) {
@@ -106,6 +179,7 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 		LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
 		sessionFactory.setPackagesToScan(ConfigReader.getKey(ConfigKey.datasource_packageToScan).split(","));
 		sessionFactory.setHibernateProperties(getHibernateProperties());
+		sessionFactory.setImplicitNamingStrategy(ImplicitNamingStrategyComponentPathImpl.INSTANCE);
 		return sessionFactory;
 	}
 

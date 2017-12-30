@@ -33,7 +33,7 @@ public class FormField implements Serializable {
 	private T type;
 	private String label;
 	private String name;
-	private Integer length;
+	private Integer length = 255;
 	private Boolean mandatory;
 	private LinkedHashMap<String, String> populator;
 	private String idFieldName;
@@ -75,13 +75,20 @@ public class FormField implements Serializable {
 	private FormField() {
 	}
 
-	public FormField(String prefix, Class<?> clazz, Field field) {
-		String className = StringUtils.uncapitalize(clazz.getSimpleName());
+	public FormField(String prefix, String embeddedFieldName, Class<?> clazz, Field field) {
 		StringBuilder prefixBuilded = new StringBuilder();
-		if (!prefix.isEmpty()) {
-			prefixBuilded.append(StringUtils.uncapitalize(prefix)).append(".");
+		String className;
+		//		if (!Reflection.isEmbedded(clazz)) {
+		if (StringUtils.isEmpty(embeddedFieldName)) {
+			className = StringUtils.uncapitalize(clazz.getSimpleName());
+			prefixBuilded.append(className).append(".");
+			label = className.concat(".page.field.").concat(field.getName()).concat(".label");
+		} else {
+			prefixBuilded.append(prefix).append(".");
+			className = StringUtils.uncapitalize(prefix);
+			label = prefix.concat(".page.field.").concat(embeddedFieldName).concat(".").concat(field.getName())
+					.concat(".label");
 		}
-		prefixBuilded.append(className).append(".");
 
 		if (Reflection.isEntity(field.getType())) {
 			JoinColumn columnAnnotation = field.getAnnotation(JoinColumn.class);
@@ -94,7 +101,11 @@ public class FormField implements Serializable {
 				}
 				mandatory = !columnAnnotation.nullable();
 			} else {
-				name = prefixBuilded.append(field.getName()).toString();
+				if (StringUtils.isEmpty(embeddedFieldName)) {
+					name = prefixBuilded.append(field.getName()).toString();
+				} else {
+					name = prefixBuilded.append(embeddedFieldName).append(".").append(field.getName()).toString();
+				}
 				mandatory = false;
 			}
 		} else {
@@ -109,12 +120,14 @@ public class FormField implements Serializable {
 				}
 				mandatory = !columnAnnotation.nullable();
 			} else {
-				name = prefixBuilded.append(field.getName()).toString();
+				if (StringUtils.isEmpty(embeddedFieldName)) {
+					name = prefixBuilded.append(field.getName()).toString();
+				} else {
+					name = prefixBuilded.append(embeddedFieldName).append(".").append(field.getName()).toString();
+				}
 				mandatory = false;
 			}
 		}
-
-		label = new StringBuilder(className).append(".page.field.").append(field.getName()).append(".label").toString();
 
 		Class<?> fieldType = field.getType();
 		if (field.isAnnotationPresent(Id.class)) {

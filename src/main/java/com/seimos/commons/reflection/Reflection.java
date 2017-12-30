@@ -17,13 +17,13 @@ import javax.persistence.Transient;
 import org.hibernate.LazyInitializationException;
 
 public class Reflection {
-	
+
 	public Collection<String> entityDeepPath(Class<?> clazz) {
-		
+
 		Collection<String> paths = new ArrayList<String>();
 
 		createPaths(paths, clazz);
-		
+
 		for (String string : paths) {
 			System.out.println(string);
 		}
@@ -37,32 +37,29 @@ public class Reflection {
 
 	private void createPaths(Collection<String> paths, Class<?> clazz, String embeddedField) {
 		//Class<? extends Object> clazz = entidade.getClass();
-//		embeddedField = (embeddedField.equals("") ? "" : embeddedField + ".");
+		//		embeddedField = (embeddedField.equals("") ? "" : embeddedField + ".");
 
 		for (Field field : clazz.getDeclaredFields()) {
-			
-			if (isEntity(field.getType()))
-			{
+
+			if (isEntity(field.getType())) {
 				createPaths(paths, clazz);
-			}
-			else
-			{
+			} else {
 				System.out.println(field.getName());
 			}
 			String fieldName = field.getName();
 			Method method = null;
-//			Object result = null;
+			//			Object result = null;
 			try {
 				method = clazz.getMethod(Reflection.getGetter(field));
-				
+
 			} catch (SecurityException e) {
 				e.printStackTrace();
 			} catch (NoSuchMethodException e) {
 				e.printStackTrace();
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
-			} 
-			
+			}
+
 			System.out.println(fieldName);
 			System.out.println(method.getName());
 
@@ -85,22 +82,15 @@ public class Reflection {
 			 */
 		}
 	}
-	
+
 	public static boolean isEntity(Class<?> clazz) {
-		boolean result = false;
-		for (int i = 0; i < clazz.getAnnotations().length; i++) {
-			Annotation annotation = clazz.getAnnotations()[i];
-			Class<?> type = annotation.annotationType();
-			if (type == Entity.class) {
-				return true;
-			}
-		}
-		return result;
+		return clazz.isAnnotationPresent(Entity.class);
 	}
 
 	public static String getGetter(Field field) {
 		String fieldName = field.getName();
-		String methodName = ((field.getType() == Boolean.TYPE) ? "is" : "get") + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+		String methodName = ((field.getType() == Boolean.TYPE) ? "is" : "get") + fieldName.substring(0, 1).toUpperCase()
+				+ fieldName.substring(1);
 		return methodName;
 	}
 
@@ -113,15 +103,7 @@ public class Reflection {
 	}
 
 	public static boolean isEmbedded(Class<?> clazz) {
-		boolean result = false;
-		for (int i = 0; i < clazz.getAnnotations().length; i++) {
-			Annotation annotation = clazz.getAnnotations()[i];
-			Class<?> type = annotation.annotationType();
-			if (type == Embeddable.class) {
-				return true;
-			}
-		}
-		return result;
+		return clazz.isAnnotationPresent(Embeddable.class);
 	}
 
 	public static Field[] getNoTransientFields(Class<?> clazz) {
@@ -178,7 +160,7 @@ public class Reflection {
 				embeddedCandidateName = attributePath;
 			}
 			field = clazz.getDeclaredField(embeddedCandidateName);
-			
+
 			return (field.isAnnotationPresent(EmbeddedId.class) || field.isAnnotationPresent(Embedded.class));
 		} catch (Exception e) {
 			return false;

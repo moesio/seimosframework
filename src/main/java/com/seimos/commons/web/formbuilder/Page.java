@@ -40,17 +40,23 @@ public class Page implements Serializable {
 	}
 
 	private Collection<? extends FormField> extractFields(Class<?> clazz) {
-		return extractFields("", clazz);
+		return extractFields("", null, clazz);
 	}
 
-	private Collection<? extends FormField> extractFields(String prefix, Class<?> clazz) {
+	private Collection<? extends FormField> extractFields(String prefix, String embeddedFieldName, Class<?> clazz) {
 		ArrayList<FormField> formFields = new ArrayList<FormField>();
 		Field[] noTransientFields = Reflection.getNoTransientFields(clazz);
 		for (Field field : noTransientFields) {
-			FormField formField = new FormField(prefix, clazz, field);
 			if (field.isAnnotationPresent(Embedded.class) || field.isAnnotationPresent(EmbeddedId.class)) {
-				formFields.addAll(extractFields(clazz.getSimpleName(), field.getType()));
+				formFields.addAll(extractFields(StringUtils.uncapitalize(clazz.getSimpleName()), field.getName(),
+						field.getType()));
 			} else {
+				FormField formField;
+				if (StringUtils.isEmpty(embeddedFieldName)) {
+					formField = new FormField(prefix, null, clazz, field);
+				} else {
+					formField = new FormField(prefix, embeddedFieldName, clazz, field);
+				}
 				formFields.add(formField);
 			}
 		}

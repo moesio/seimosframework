@@ -122,7 +122,14 @@ ${pageSize!"0"}
 											</#compress>
 											${newLabel}
 										<#else>
-											${item["${name}"][label]}
+											<#assign value>
+												${item["${name}"][label]!}
+											</#assign>
+											<#if value?trim?has_content>
+												${value}
+											<#else>
+												${label}
+											</#if>
 										</#if>
 									<#elseif "${field.type}" == "BOOLEAN">
 										<#assign domain>

@@ -71,7 +71,7 @@
 	            -->
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
-					<@spring.showErrors "<br/>" "text-danger"/>
+							<@spring.showErrors "<br/>" "text-danger"/>
 						</div>
 					</div>
 					<#list page.formFields as field>
