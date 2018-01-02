@@ -136,6 +136,12 @@ ${pageSize!"0"}
 											<@spring.messageText "${field.label}.jsonDomain" ""/>
 										</#assign>
 										${domain?eval[item[name]?c]}
+									<#elseif "${field.type}" == "DETAIL">
+									<#--
+										<#list program.privileges?values as a>
+										</#list>
+									-->
+										how iterate over list?
 									<#else>
 										${item[name]}
 									</#if>

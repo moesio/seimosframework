@@ -2,6 +2,8 @@ package com.seimos.commons.web.formbuilder;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedHashMap;
@@ -135,22 +137,7 @@ public class FormField implements Serializable {
 		} else if (field.isAnnotationPresent(ManyToOne.class)) {
 			type = T.SELECT;
 			idFieldName = Reflection.getIdField(field.getType()).getName();
-			populator = new LinkedHashMap<String, String>();
-
-			try {
-				// FIXME Perharps searching by @Service annotated class whose parameters is field.getType() is better thant hardcoding ...ServiceImpl
-				WebApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
-				GenericService<?> service = (GenericService<?>) context
-						.getBean(StringUtils.uncapitalize(field.getType().getSimpleName()).concat("ServiceImpl"));
-				ArrayList<SelectOption> tinyList = service.tinyList();
-
-				for (SelectOption option : tinyList) {
-					populator.put(option.getValue(), option.getText());
-				}
-			} catch (HibernateException e) {
-				logger.warn(
-						"field populator is not necessary while validation. Cautionn if this message appears while other operations.");
-			}
+			generatePopulator(field.getType());
 		} else {
 			if (fieldType == Boolean.class) {
 				type = T.BOOLEAN;
@@ -158,6 +145,11 @@ public class FormField implements Serializable {
 				type = T.DATE;
 			} else if (field.isAnnotationPresent(OneToMany.class)) {
 				type = T.DETAIL;
+				ParameterizedType parameterizedType = (ParameterizedType) field.getGenericType();
+				Type[] types = parameterizedType.getActualTypeArguments();
+				Class<?> typeClass = (Class<?>) types[0];
+				idFieldName = Reflection.getIdField(typeClass).getName();
+				generatePopulator(typeClass);
 			} else if (fieldType == Enum.class) {
 				type = T.ENUM;
 			} else if (fieldType == Integer.class) {
@@ -167,6 +159,24 @@ public class FormField implements Serializable {
 			} else {
 				type = T.TEXT;
 			}
+		}
+	}
+
+	private void generatePopulator(Class<?> clazz) {
+		populator = new LinkedHashMap<String, String>();
+		try {
+			// FIXME Perharps searching by @Service annotated class whose parameters is field.getType() is better thant hardcoding ...ServiceImpl
+			WebApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
+			GenericService<?> service = (GenericService<?>) context
+					.getBean(StringUtils.uncapitalize(clazz.getSimpleName()).concat("ServiceImpl"));
+			ArrayList<SelectOption> tinyList = service.tinyList();
+
+			for (SelectOption option : tinyList) {
+				populator.put(option.getValue(), option.getText());
+			}
+		} catch (HibernateException e) {
+			logger.warn(
+					"field populator is not necessary while validation. Cautionn if this message appears while other operations.");
 		}
 	}
 

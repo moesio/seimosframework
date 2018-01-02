@@ -107,12 +107,22 @@
 	                        </div>
 					    	<#break>
 							<#case "ENUM">
+								enum
 					    	<#break>
 							<#case "DETAIL">
+	                        	<@label field=field/>
+	                            <div class="col-sm-10">
+	                            <#--
+	                        		<@selectForField field=field/>
+	                            -->
+								<@spring.formMultiSelect "${field.name}" field.populator "class='form-control'"/><#t>
+	                            </div>
 					    	<#break>
 							<#case "DOUBLE">
+								double
 					    	<#break>
 							<#case "DATE">
+								date
 					    	<#break>
 							<#case "BOOLEAN">
 	                        <div class="form-group">
