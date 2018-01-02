@@ -110,7 +110,7 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 
 	private Criteria listCriteria() {
 		Criteria criteria = getCurrentSession().createCriteria(getEntityClass());
-		criteria.setResultTransformer(RootEntityResultTransformer.INSTANCE);
+		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		return criteria;
 	}
 
@@ -776,7 +776,7 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 	private Criteria createListCriteria(Domain entity) {
 
 		Criteria criteria = getCurrentSession().createCriteria(entity.getClass());
-		criteria.setResultTransformer(RootEntityResultTransformer.INSTANCE);
+		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
 		createCriteria(criteria, entity);
 

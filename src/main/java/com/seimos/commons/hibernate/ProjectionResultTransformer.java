@@ -7,10 +7,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.HibernateException;
 import org.hibernate.transform.ResultTransformer;
+
+import com.seimos.commons.reflection.Reflection;
 
 /**
  * @author Moésio Medeiros
@@ -28,8 +31,19 @@ public class ProjectionResultTransformer implements ResultTransformer {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public List<?> transformList(List collection) {
-		return collection;
+	public List<?> transformList(List list) {
+		ArrayList<Object> ids = new ArrayList<Object>();
+		for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+			Object item = (Object) iterator.next();
+			Field idField = Reflection.getIdField(item.getClass());
+			Object invoke = Reflection.invoke(item, idField.getName());
+			if (ids.contains(invoke)) {
+				iterator.remove();
+			} else {
+				ids.add(invoke);
+			}
+		}
+		return list;
 	}
 
 	public Object transformTuple(Object[] values, String[] aliases) {
