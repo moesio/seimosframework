@@ -123,7 +123,7 @@ ${pageSize!"0"}
 											${newLabel}
 										<#else>
 											<#assign value>
-												${item["${name}"][label]!}
+												${item[name][label]!}
 											</#assign>
 											<#if value?trim?has_content>
 												${value}
@@ -137,11 +137,9 @@ ${pageSize!"0"}
 										</#assign>
 										${domain?eval[item[name]?c]}
 									<#elseif "${field.type}" == "DETAIL">
-									<#--
-										<#list program.privileges?values as a>
+										<#list item[name] as detail>
+										    ${detail[label]}<br/>
 										</#list>
-									-->
-										how iterate over list?
 									<#else>
 										${item[name]}
 									</#if>
