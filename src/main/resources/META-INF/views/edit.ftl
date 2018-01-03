@@ -113,9 +113,20 @@
 	                        	<@label field=field/>
 	                            <div class="col-sm-10">
 	                            <#--
-	                        		<@selectForField field=field/>
-	                            -->
 								<@spring.formMultiSelect "${field.name}" field.populator "class='form-control'"/><#t>
+	                            -->
+	                            <@spring.bind "${field.name}"/>
+								<#assign subList = spring.status.value?default(" ")>
+								<select multiple="multiple" id="${spring.status.expression}" name="${spring.status.expression}" class='form-control'>
+								    <#list field.populator?keys as value>
+								    <#if subList?contains(value) >
+								        <#assign isSelected = true>
+								    <#else>
+								        <#assign isSelected = false>
+								    </#if>
+								    <option value="${value?html}"<#if isSelected> selected="selected"</#if>>${field.populator[value]?html}
+								    </#list>
+								</select>
 	                            </div>
 					    	<#break>
 							<#case "DOUBLE">

@@ -4,8 +4,6 @@
 package com.seimos.commons.hibernate;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -67,8 +65,7 @@ public class ProjectionResultTransformer implements ResultTransformer {
 							Object instance;
 							if (field.get(result) == null) {
 								field.set(result, list);
-								Type type = ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
-								instance = ((Class<?>) type).newInstance();
+								instance = (Reflection.getGenericParameter(field.getGenericType())).newInstance();
 								list.add(instance);
 							} else {
 								list = (ArrayList<Object>) field.get(result);

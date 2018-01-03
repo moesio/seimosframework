@@ -1,7 +1,6 @@
 package com.seimos.commons.service;
 
 import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,8 +25,7 @@ public abstract class GenericServiceImpl<Domain, Dao extends GenericDao<Domain>>
 	public abstract GenericDao<Domain> getDao();
 
 	public GenericServiceImpl() {
-		this.entityClass = (Class<Domain>) ((ParameterizedType) getClass().getGenericSuperclass())
-				.getActualTypeArguments()[0];
+		this.entityClass = (Class<Domain>) Reflection.getGenericParameter(getClass().getGenericSuperclass());
 	}
 
 	@Autowired

@@ -1,6 +1,5 @@
 package com.seimos.commons.controller;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
 import java.util.List;
 
@@ -61,20 +60,20 @@ import com.seimos.commons.web.formbuilder.SelectOption;
  * @date Thu Apr 20 17:45:29 BRT 2012
  * 
  */
-public abstract class GenericCrudController<Entity> {
+public abstract class GenericCrudController<Domain> {
 
 	private static final Logger logger = LoggerFactory.getLogger(GenericCrudController.class);
 	@SuppressWarnings("unused")
 	private HashMap<Class<?>, Page> formCache = new HashMap<Class<?>, Page>();
-	private Class<Entity> entityClass;
+	private Class<Domain> entityClass;
 	private ReloadableResourceBundleMessageSource messageSource;
 	public Environment env;
+	Reflection reflection;
 
-	public abstract GenericService<Entity> getService();
+	public abstract GenericService<Domain> getService();
 
 	public GenericCrudController() {
-		this.entityClass = (Class<Entity>) ((ParameterizedType) getClass().getGenericSuperclass())
-				.getActualTypeArguments()[0];
+		this.entityClass = (Class<Domain>) Reflection.getGenericParameter(getClass().getGenericSuperclass());
 	}
 
 	@Autowired
@@ -92,7 +91,7 @@ public abstract class GenericCrudController<Entity> {
 		binder.setValidator(getValidator());
 	}
 
-	public abstract GenericValidator<Entity> getValidator();
+	public abstract GenericValidator<Domain> getValidator();
 
 	private Page createPage(Model model) {
 		Page page = null;
@@ -131,7 +130,7 @@ public abstract class GenericCrudController<Entity> {
 	@Transactional
 	//		@ExceptionHandler
 	// @ModelAttribute anotaded attribute MUST BE FOLLOWED by BindingResult attribute, else, error is thrown
-	public ModelAndView create(@Valid @ModelAttribute Entity entity, BindingResult result, RedirectAttributes redirect)
+	public ModelAndView create(@Valid @ModelAttribute Domain entity, BindingResult result, RedirectAttributes redirect)
 			throws Exception {
 		try {
 			if (result.hasErrors()) {
@@ -150,7 +149,7 @@ public abstract class GenericCrudController<Entity> {
 	@RequestMapping(value = "/createAjax", method = RequestMethod.POST)
 	@Transactional
 	@ResponseBody
-	public Entity createAjax(@RequestBody Entity entity) throws Exception {
+	public Domain createAjax(@RequestBody Domain entity) throws Exception {
 		getService().create(entity);
 		return entity;
 	}
@@ -163,7 +162,7 @@ public abstract class GenericCrudController<Entity> {
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	@ResponseBody
 	@Transactional(readOnly = true)
-	public List<Entity> list() {
+	public List<Domain> list() {
 		return getService().list();
 	}
 
@@ -205,7 +204,7 @@ public abstract class GenericCrudController<Entity> {
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	@ResponseBody
 	@Transactional(readOnly = true)
-	public Entity findByID(@PathVariable Integer id) {
+	public Domain findByID(@PathVariable Integer id) {
 		Filters filters = new Filters().add(new Filter("id", id)).add(new Filter("*"));
 		return getService().findUnique(filters);
 	}
@@ -219,7 +218,7 @@ public abstract class GenericCrudController<Entity> {
 	@RequestMapping(value = "/filter", method = RequestMethod.POST)
 	@ResponseBody
 	@Transactional(readOnly = true)
-	public List<Entity> findByExample(@RequestBody Entity entity) {
+	public List<Domain> findByExample(@RequestBody Domain entity) {
 		return getService().find(entity);
 	}
 
@@ -227,7 +226,7 @@ public abstract class GenericCrudController<Entity> {
 	@Transactional(readOnly = true)
 	public String editForm(Model model, @PathVariable Integer id) {
 		createPage(model);
-		Entity entity = getService().findById(id);
+		Domain entity = getService().findById(id);
 		if (model.asMap().get(BindingResult.MODEL_KEY_PREFIX + getEntitySimpleName()) == null) {
 			model.addAttribute(getEntitySimpleName(), entity);
 		}
@@ -237,8 +236,8 @@ public abstract class GenericCrudController<Entity> {
 	@RequestMapping(value = "/dataTable", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
 	@ResponseBody
-	public DataTable<Entity> dataTable(@ModelAttribute Entity entity, Model model) {
-		DataTable<Entity> dataTable = new DataTable<Entity>();
+	public DataTable<Domain> dataTable(@ModelAttribute Domain entity, Model model) {
+		DataTable<Domain> dataTable = new DataTable<Domain>();
 		dataTable.setDraw(1);
 		dataTable.setRecordsFiltered(3);
 		dataTable.setRecordsTotal(10);
@@ -248,19 +247,19 @@ public abstract class GenericCrudController<Entity> {
 
 	@RequestMapping(value = "/grid", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
-	public String grid(@ModelAttribute Entity entity, Model model) {
+	public String grid(@ModelAttribute Domain entity, Model model) {
 		return UrlBasedViewResolver.REDIRECT_URL_PREFIX.concat("./grid/0/" + getGridPageSize());
 	}
 
 	@RequestMapping(value = "/grid/{start}/{rows}", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
-	public String grid(@ModelAttribute Entity entity, Model model, @PathVariable Integer start,
+	public String grid(@ModelAttribute Domain entity, Model model, @PathVariable Integer start,
 			@PathVariable Integer rows) {
 		if (rows != null && rows == 0) {
 			rows = Integer.valueOf(getGridPageSize());
 		}
 		// TODO Define a way of sorting fields
-		List<Entity> list = getService().find(entity, start, rows);
+		List<Domain> list = getService().find(entity, start, rows);
 		createPage(model);
 		model.addAttribute("list", list);
 		model.addAttribute("entity", getEntitySimpleName());
@@ -277,7 +276,7 @@ public abstract class GenericCrudController<Entity> {
 	 */
 	@RequestMapping(value = "/update", method = RequestMethod.POST)
 	@Transactional
-	public ModelAndView update(@Valid @ModelAttribute Entity entity, BindingResult result, RedirectAttributes redirect)
+	public ModelAndView update(@Valid @ModelAttribute Domain entity, BindingResult result, RedirectAttributes redirect)
 			throws Exception {
 		try {
 			if (result.hasErrors()) {
@@ -298,7 +297,7 @@ public abstract class GenericCrudController<Entity> {
 	@RequestMapping(value = "/updateAjax", method = RequestMethod.POST)
 	@Transactional
 	@ResponseBody
-	public Entity updateAjax(@RequestBody Entity entity) throws Exception {
+	public Domain updateAjax(@RequestBody Domain entity) throws Exception {
 		getService().update(entity);
 		return entity;
 	}

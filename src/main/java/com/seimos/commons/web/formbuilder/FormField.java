@@ -2,7 +2,6 @@ package com.seimos.commons.web.formbuilder;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -145,9 +144,7 @@ public class FormField implements Serializable {
 				type = T.DATE;
 			} else if (field.isAnnotationPresent(OneToMany.class)) {
 				type = T.DETAIL;
-				ParameterizedType parameterizedType = (ParameterizedType) field.getGenericType();
-				Type[] types = parameterizedType.getActualTypeArguments();
-				Class<?> typeClass = (Class<?>) types[0];
+				Class<?> typeClass = Reflection.getGenericParameter(field.getGenericType());
 				idFieldName = Reflection.getIdField(typeClass).getName();
 				generatePopulator(typeClass);
 			} else if (fieldType == Enum.class) {
@@ -165,14 +162,22 @@ public class FormField implements Serializable {
 	private void generatePopulator(Class<?> clazz) {
 		populator = new LinkedHashMap<String, String>();
 		try {
-			// FIXME Perharps searching by @Service annotated class whose parameters is field.getType() is better thant hardcoding ...ServiceImpl
 			WebApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
-			GenericService<?> service = (GenericService<?>) context
-					.getBean(StringUtils.uncapitalize(clazz.getSimpleName()).concat("ServiceImpl"));
-			ArrayList<SelectOption> tinyList = service.tinyList();
 
-			for (SelectOption option : tinyList) {
-				populator.put(option.getValue(), option.getText());
+			GenericService<?> service;
+			String[] serviceBeanNames = context.getBeanNamesForAnnotation(org.springframework.stereotype.Service.class);
+			for (String beanName : serviceBeanNames) {
+				Type serviceType = context.getBean(beanName).getClass().getGenericSuperclass();
+				if (Reflection.getGenericParameter(serviceType) == clazz) {
+					service = (GenericService<?>) context.getBean(beanName);
+
+					ArrayList<SelectOption> tinyList = service.tinyList();
+
+					for (SelectOption option : tinyList) {
+						populator.put(option.getValue(), option.getText());
+					}
+					break;
+				}
 			}
 		} catch (HibernateException e) {
 			logger.warn(

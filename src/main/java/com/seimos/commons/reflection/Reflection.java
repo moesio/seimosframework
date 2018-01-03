@@ -3,6 +3,8 @@ package com.seimos.commons.reflection;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -81,6 +83,14 @@ public class Reflection {
 			}
 			 */
 		}
+	}
+
+	public static Class<?> getGenericParameter(Type baseClass) {
+		return getGenericParameter(baseClass, 0);
+	}
+
+	public static Class<?> getGenericParameter(Type baseClass, int index) {
+		return (Class<?>) ((ParameterizedType) baseClass).getActualTypeArguments()[index];
 	}
 
 	public static boolean isEntity(Class<?> clazz) {
