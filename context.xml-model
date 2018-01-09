@@ -30,5 +30,5 @@
     <Valve className="org.apache.catalina.valves.CometConnectionManagerValve" />
     -->
 
-	<Resource name="jdbc/seimos" type="javax.sql.DataSource" auth="Container" driverClassName="org.hsqldb.jdbcDriver" maxActive="100" maxIdle="30" maxWait="10000" url="jdbc:hsqldb:file:dgestao.db;shutdown=false" username="sa" password="" />
+	<Resource name="jdbc/seimos" type="javax.sql.DataSource" auth="Container" driverClassName="org.hsqldb.jdbcDriver" maxActive="100" maxIdle="30" maxWait="10000" url="jdbc:hsqldb:file:seimos.db;shutdown=false;hsqldb.lock_file" username="sa" password="" />
 </Context>
