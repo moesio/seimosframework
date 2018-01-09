@@ -82,7 +82,7 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 	}
 
 	public Domain retrieve(Integer id) throws DataAccessException {
-		return (Domain) getHibernateTemplate().get(getEntityClass(), id);
+		return getHibernateTemplate().get(getEntityClass(), id);
 	}
 
 	public Domain update(Domain entity) {
@@ -195,6 +195,7 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 	 * @deprecated Use find(java.util.List<br.com.seimos.commons.hibernate.Filters>
 	 *             ) instead
 	 */
+	@Deprecated
 	public List<Domain> find(Filter... filters) {
 		return find(Arrays.asList(filters));
 		// Filter[] filterArray = new Filter[filters.getEntries().size()];
@@ -229,7 +230,7 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 			ArrayList<String> wildcardList = new ArrayList<String>();
 
 			for (Iterator<Filter> iterator = filters.iterator(); iterator.hasNext();) {
-				Filter filter = (Filter) iterator.next();
+				Filter filter = iterator.next();
 
 				if (filter.getWildcard().equals(Wildcard.YES)) {
 					String attribute = filter.getAttribute();
@@ -421,11 +422,11 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 	}
 
 	public Domain findUnique(List<Filter> filters) {
-		List<Domain> list = (List<Domain>) find(filters);
+		List<Domain> list = find(filters);
 		if (list.size() == 0)
 			return null;
 		if (list.size() == 1) {
-			return (Domain) list.get(0);
+			return list.get(0);
 		} else {
 			throw new HibernateException("Consulta a " + getClass().getSimpleName() + " não traz resultado único");
 		}
@@ -520,7 +521,7 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 									+ filter.getCondition());
 				}
 				if (value.getClass() == String.class) {
-					criterion = Restrictions.eq(propertyName, (String) value);
+					criterion = Restrictions.eq(propertyName, value);
 				} else {
 					criterion = Restrictions.eq(propertyName, value);
 				}
@@ -829,7 +830,7 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 					} else if (field.getType() == String.class && !result.equals("")) {
 						criteria.add(Restrictions.ilike(embeddedField + fieldName, (String) result, MatchMode.START));
 					} else if (field.getType() == Date.class) {
-						criteria.add(Restrictions.eq(embeddedField + fieldName, (Date) result));
+						criteria.add(Restrictions.eq(embeddedField + fieldName, result));
 					}
 				}
 			}

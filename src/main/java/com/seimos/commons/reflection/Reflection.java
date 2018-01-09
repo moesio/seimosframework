@@ -128,11 +128,11 @@ public class Reflection {
 				if (annotations[j].annotationType() == Transient.class)
 					isTransient = true;
 			}
-			if (!isTransient) {
+			if (!isTransient && !field.getName().contains("$")) {
 				fieldsCollection.add(field);
 			}
 		}
-		notTransientFields = (Field[]) fieldsCollection.toArray(notTransientFields);
+		notTransientFields = fieldsCollection.toArray(notTransientFields);
 		return notTransientFields;
 	}
 
@@ -194,19 +194,20 @@ public class Reflection {
 	}
 
 	public static Field getIdField(Class<?> clazz) {
+		Class<?> clazzParameter = clazz;
 		try {
 			Field[] declaredFields;
-			while (clazz != null) {
+			do {
 				declaredFields = clazz.getDeclaredFields();
 				for (Field field : declaredFields) {
 					if (field.isAnnotationPresent(Id.class))
 						return field;
 				}
 				clazz = clazz.getSuperclass();
-			}
+			} while (clazz != null);
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		}
-		return null;
+		throw new RuntimeException("There is no @Id annotated field in " + clazzParameter.getCanonicalName());
 	}
 }

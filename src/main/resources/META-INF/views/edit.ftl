@@ -130,10 +130,20 @@
 	                            </div>
 					    	<#break>
 							<#case "DOUBLE">
-								double
+	                        <div class="form-group">
+	                        	<@label field=field/>
+	                            <div class="col-sm-10">
+									double
+	                            </div>
+	                        </div>
 					    	<#break>
 							<#case "DATE">
-								date
+	                        <div class="form-group">
+	                        	<@label field=field/>
+	                            <div class="col-sm-10">
+	                            		date
+	                            </div>
+	                        </div>
 					    	<#break>
 							<#case "BOOLEAN">
 	                        <div class="form-group">
