@@ -55,7 +55,8 @@ public class PageTest {
 				new FormField(Foo.class, "within.wany"), //
 				new FormField(Foo.class, "within.wsome"), //
 				new FormField(Foo.class, "within.wone"), //
-				new FormField(Foo.class, "within.deep.another"),//
+				new FormField(Foo.class, "within.deep.another"), //
+				new FormField(Foo.class, "within.deep.superDeep"),//
 		};
 		assertArrayEquals(expected, actual);
 	}

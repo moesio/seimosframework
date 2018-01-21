@@ -5,8 +5,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 
 import javax.lang.model.element.Modifier;
 import javax.persistence.Entity;
@@ -34,18 +35,25 @@ import com.squareup.javapoet.TypeSpec;
 
 /**
  * @author moesio.medeiros
- * @date 29 de dez de 2017 11:51:20 
+ * @date 29 de dez de 2017 11:51:20
  *
  */
 public class LayerGenerator {
 
 	private static Class<?> controllerClass;
+
 	private static Class<?> validatorClass;
+
 	private static Class<?> serviceImplClass;
+
 	private static Class<?> serviceClass;
+
 	private static Class<?> daoClass;
+
 	private static Class<?> daoImplClass;
+
 	private static Class<?> domainClazz;
+
 	private static ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
 	private static String getBasePackage(Class<?> clazz) {
@@ -128,9 +136,7 @@ public class LayerGenerator {
 				.superclass(ParameterizedTypeName.get(GenericValidator.class, clazz))//
 				.addJavadoc("Automatic generated \n" //
 						+ "@author Seimos Framework\n\n" //
-						+ "@date "
-						+ new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime())//
-						+ "\n")//
+						+ "@date " + now() + "\n")//
 				.addAnnotation(Component.class)//
 				.build();
 
@@ -168,9 +174,7 @@ public class LayerGenerator {
 				.addMethod(getDaoSpec)//
 				.addJavadoc("Automatic generated \n" //
 						+ "@author Seimos Framework\n\n" //
-						+ "@date "
-						+ new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime())//
-						+ "\n") //
+						+ "@date " + now() + "\n") //
 				.build();
 
 		serviceImplClass = buildClass(servicePackage, serviceImplName, serviceImpleSpec);
@@ -185,9 +189,7 @@ public class LayerGenerator {
 				.addSuperinterface(ParameterizedTypeName.get(GenericService.class, clazz))//
 				.addJavadoc("Automatic generated \n" //
 						+ "@author Seimos Framework\n\n" //
-						+ "@date "
-						+ new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime())//
-						+ "\n")//
+						+ "@date " + now() + "\n")//
 				.build();
 
 		serviceClass = buildClass(getBasePackage(clazz).concat(".service"), serviceName, serviceSpec);
@@ -204,9 +206,7 @@ public class LayerGenerator {
 				.addSuperinterface(ParameterizedTypeName.get(GenericDao.class, clazz))//
 				.addJavadoc("Automatic generated \n" //
 						+ "@author Seimos Framework\n\n" //
-						+ "@date "
-						+ new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime())//
-						+ "\n")//
+						+ "@date " + now() + "\n")//
 				.build();
 
 		daoClass = buildClass(daoPackageName, daoName, daoSpec);
@@ -221,12 +221,17 @@ public class LayerGenerator {
 				.addAnnotation(Repository.class)//
 				.addJavadoc("Automatic generated \n" //
 						+ "@author Seimos Framework\n\n" //
-						+ "@date "
-						+ new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime())//
+						+ "@date " + now()//
 						+ "\n")//
 				.build();
 
 		daoImplClass = buildClass(getBasePackage(clazz).concat(".dao"), daoImplName, daoImplSpec);
+	}
+
+	private static String now() {
+		LocalDate now = LocalDate.now();
+		DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern("yyyy-MM-dd HH:mm:ss").toFormatter();
+		return now.format(formatter);
 	}
 
 	public static Class<?> buildClass(String packageName, String className, TypeSpec spec) {

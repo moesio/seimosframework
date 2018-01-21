@@ -140,6 +140,7 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 		Properties properties = new Properties();
 		properties.setProperty(freemarker.template.Configuration.AUTO_IMPORT_KEY, "/spring.ftl as spring");
 		properties.setProperty(freemarker.template.Configuration.LOCALIZED_LOOKUP_KEY, "false");
+		properties.setProperty(freemarker.template.Configuration.DATE_FORMAT_KEY, "yyyy-MM-dd");
 
 		ArrayList<String> templateLoaderPaths = new ArrayList<String>();
 		templateLoaderPaths.addAll(Arrays.asList(ConfigReader.getKey(ConfigKey.viewPath).split(",")));

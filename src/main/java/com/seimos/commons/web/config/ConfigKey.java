@@ -85,15 +85,22 @@ public enum ConfigKey {
 		public String getComment() {
 			return "Path to views, e.g., \"/WEB-INF/views/\"";
 		}
+	},
+	dateFormat {
+		@Override
+		public String getComment() {
+			return "Date format";
+		}
 	};
 
 	/**
-	 * Shows explanation about key 
+	 * Shows explanation about key
 	 * 
 	 * @return
 	 */
 	public abstract String getComment();
 
+	@Override
 	public String toString() {
 		return this.name().replace("_", ".");
 	}

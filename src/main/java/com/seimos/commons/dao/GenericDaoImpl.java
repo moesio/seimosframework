@@ -51,7 +51,9 @@ import com.seimos.commons.reflection.Reflection;
 public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements GenericDao<Domain> {
 
 	protected static final Logger logger = LoggerFactory.getLogger(GenericDaoImpl.class);
+
 	private Class<Domain> entityClass;
+
 	protected HibernateTemplate hibernateTemplate;
 
 	public GenericDaoImpl() {
@@ -386,7 +388,7 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 			filtersIterator.next();
 			Field field = clazz.getDeclaredField(attributePath);
 			Class<?> type = Reflection.getGenericParameter(field.getGenericType());
-			Field[] fields = Reflection.getNoTransientFields(type);
+			List<Field> fields = Reflection.getNoTransientFields(type);
 
 			for (Field f : fields) {
 				filtersIterator.add(new Filter(attributePath + "." + f.getName()));
@@ -403,7 +405,7 @@ public class GenericDaoImpl<Domain> extends HibernateDaoSupport implements Gener
 
 	private List<? extends Filter> getMatchAttributes(Class<Domain> clazz, String regex) {
 		ArrayList<Filter> filters = new ArrayList<Filter>();
-		Field[] declaredFields = Reflection.getNoTransientFields(clazz);
+		List<Field> declaredFields = Reflection.getNoTransientFields(clazz);
 		for (Field field : declaredFields) {
 			String fieldName = field.getName();
 			if (fieldName.matches(regex) && !Reflection.isEntity(field.getClass())) {

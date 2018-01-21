@@ -1,6 +1,6 @@
 package com.seimos.commons.web.formbuilder.domain;
 
-import java.util.Calendar;
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.persistence.Embedded;
@@ -17,7 +17,7 @@ import javax.persistence.OneToOne;
 public class Foo {
 	private Boolean bool;
 
-	private Calendar date;
+	private LocalDate date;
 
 	@OneToMany
 	private List<Some> many;
@@ -50,11 +50,11 @@ public class Foo {
 		this.bool = bool;
 	}
 
-	public Calendar getDate() {
+	public LocalDate getDate() {
 		return date;
 	}
 
-	public void setDate(Calendar date) {
+	public void setDate(LocalDate date) {
 		this.date = date;
 	}
 

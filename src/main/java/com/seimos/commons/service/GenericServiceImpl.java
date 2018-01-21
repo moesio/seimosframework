@@ -19,7 +19,9 @@ import com.seimos.commons.web.formbuilder.SelectOption;
 public abstract class GenericServiceImpl<Domain, Dao extends GenericDao<Domain>> implements GenericService<Domain> {
 
 	protected static final Logger logger = LoggerFactory.getLogger(GenericServiceImpl.class);
+
 	private ReloadableResourceBundleMessageSource messageSource;
+
 	private Class<Domain> entityClass;
 
 	public abstract GenericDao<Domain> getDao();

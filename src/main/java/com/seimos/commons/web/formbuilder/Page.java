@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.persistence.MappedSuperclass;
+
 import org.springframework.util.StringUtils;
 
 import com.seimos.commons.reflection.Reflection;
@@ -35,43 +37,27 @@ public class Page implements Serializable {
 		entityName = StringUtils.uncapitalize(root.getSimpleName());
 		entityClass = root;
 		title = new StringBuilder(entityName).append(".page.title").toString();
-		extractFields(root, "");
+		extractFormFields(root, "");
 	}
 
-	private void extractFields(Class<?> entity, String path) {
-		Field[] fields = Reflection.getNoTransientFields(entity);
-		//		List<FormField> formFields = new ArrayList<FormField>();
+	private void extractFormFields(Class<?> entity, String path) {
+		List<Field> fields = Reflection.getNoTransientFields(entity);
+		if (entity.getSuperclass() != Object.class
+				&& entity.getSuperclass().isAnnotationPresent(MappedSuperclass.class)) {
+			extractFormFields(entity.getSuperclass(), path);
+		}
 		for (Field field : fields) {
 			if (Reflection.isEmbedded(field.getType())) {
-				//				System.out.println("--->" + field.getName());
-				extractFields(field.getType(), path.concat(".").concat(field.getName()));
+				extractFormFields(field.getType(), path.concat(".").concat(field.getName()));
+				//				if (field.getType().getSuperclass() != Object.class) {
+				//					extractFormFields(field.getType().getSuperclass(), path.concat(".").concat(field.getName()));
+				//				}
 			} else {
 				String fullPath = path.concat(".").concat(field.getName());
 				formFields.add(new FormField(entityClass, fullPath.substring(1)));
-				//				System.out.println(fullPath.substring(1));
 			}
 		}
 	}
-
-	//	private Collection<? extends FormField> extractFields(String prefix, String embeddedFieldName, Class<?> clazz) {
-	//		ArrayList<FormField> formFields = new ArrayList<FormField>();
-	//		Field[] noTransientFields = Reflection.getNoTransientFields(clazz);
-	//		for (Field field : noTransientFields) {
-	//			if (field.isAnnotationPresent(Embedded.class) || field.isAnnotationPresent(EmbeddedId.class)) {
-	//				formFields.addAll(extractFields(StringUtils.uncapitalize(clazz.getSimpleName()), field.getName(),
-	//						field.getType()));
-	//			} else {
-	//				FormField formField;
-	//				if (StringUtils.isEmpty(embeddedFieldName)) {
-	//					formField = new FormField(prefix, null, field);
-	//				} else {
-	//					formField = new FormField(prefix, embeddedFieldName, field);
-	//				}
-	//				formFields.add(formField);
-	//			}
-	//		}
-	//		return formFields;
-	//	}
 
 	public String getTitle() {
 		return title;

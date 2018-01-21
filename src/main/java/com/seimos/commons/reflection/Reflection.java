@@ -1,6 +1,5 @@
 package com.seimos.commons.reflection;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -116,24 +115,25 @@ public class Reflection {
 		return clazz.isAnnotationPresent(Embeddable.class);
 	}
 
-	public static Field[] getNoTransientFields(Class<?> clazz) {
-		Field[] notTransientFields = {};
-		Collection<Field> fieldsCollection = new ArrayList<Field>();
+	public static List<Field> getNoTransientFields(Class<?> clazz) {
+		List<Field> fields = new ArrayList<Field>();
+		fields.addAll(extractFields(clazz));
+		return fields;
+	}
+
+	private static List<Field> extractFields(Class<?> clazz) {
+		List<Field> fields = new ArrayList<Field>();
 		Field[] declaredFields = clazz.getDeclaredFields();
 		for (int i = 0; i < declaredFields.length; i++) {
-			boolean isTransient = false;
 			Field field = clazz.getDeclaredFields()[i];
-			Annotation[] annotations = field.getAnnotations();
-			for (int j = 0; j < annotations.length; j++) {
-				if (annotations[j].annotationType() == Transient.class)
-					isTransient = true;
-			}
-			if (!isTransient && !field.getName().contains("$")) {
-				fieldsCollection.add(field);
+			if (!field.isAnnotationPresent(Transient.class) && !field.getName().contains("$")) {
+				fields.add(field);
 			}
 		}
-		notTransientFields = fieldsCollection.toArray(notTransientFields);
-		return notTransientFields;
+		//		if (clazz.getSuperclass() != Object.class) {
+		//			fields.addAll(extractFields(clazz.getSuperclass()));
+		//		}
+		return fields;
 	}
 
 	public static Object invoke(Object entity, String property) {

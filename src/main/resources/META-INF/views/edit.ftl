@@ -46,7 +46,7 @@
 	<#if domain?length gt 0>
 		<@spring.formSingleSelect "${field.name}" "${domain}"?eval "class='form-control'"/><#t>
 	<#else>
-    	<@spring.formInput "${field.name}", "class='form-control' maxlength='${field.length!0}'"/><#t>
+	    	<@spring.formInput "${field.name}", "class='form-control' maxlength='${field.length!0}'"/><#t>
 	</#if>
 </#macro>
 
@@ -141,7 +141,7 @@
 	                        <div class="form-group">
 	                        	<@label field=field/>
 	                            <div class="col-sm-10">
-	                            		date
+		                            	<@spring.formInput "${field.name}", "class='form-control' maxlength='${field.length!0}'", "date"/><#t>
 	                            </div>
 	                        </div>
 					    	<#break>

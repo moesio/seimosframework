@@ -68,6 +68,7 @@ public class FormFieldTest {
 		assertEquals("within.page.field.winteger", new FormField(Within.class, "winteger").getLabel());
 		assertEquals("within.page.field.wsome", new FormField(Within.class, "wsome").getLabel());
 		assertEquals("within.page.field.deep.another", new FormField(Within.class, "deep.another").getLabel());
+		assertEquals("within.page.field.deep.superDeep", new FormField(Within.class, "deep.superDeep").getLabel());
 	}
 
 	@Test
@@ -111,7 +112,7 @@ public class FormFieldTest {
 		assertEquals(new Integer(255), new FormField(Foo.class, "doub").getLength());
 		assertEquals(new Integer(255), new FormField(Foo.class, "flo").getLength());
 		assertEquals(new Integer(255), new FormField(Foo.class, "any").getLength());
-		assertEquals(new Integer(255), new FormField(Foo.class, "id").getLength());
+		assertEquals(new Integer(255), new FormField(Foo.class, "idFoo").getLength());
 		assertEquals(new Integer(255), new FormField(Foo.class, "integer").getLength());
 		assertEquals(new Integer(255), new FormField(Foo.class, "some").getLength());
 

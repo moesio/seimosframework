@@ -8,7 +8,7 @@ import javax.persistence.Embeddable;
  *
  */
 @Embeddable
-public class Deep {
+public class Deep extends ExtendingDeep {
 	private String another;
 
 	public String getAnother() {
