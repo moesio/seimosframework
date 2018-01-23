@@ -38,10 +38,7 @@
 <#else>
 	<#assign gridFields = {}>
 </#if>
-<#-- 
-<#list list as item>
-	<#list page.formFields?keys as path>
- -->
+
 <#function getFormField item path>
 		<#assign field = page.formFields[path]>
 		<#if "${field.type}" != "HIDDEN">
@@ -109,10 +106,6 @@
 		</#if>
 	<#return field>
 </#function>
-<#-- 
-	</#list>
-</#list>
- -->
 
 <#--
  <@display.table name="list" pagesize=pageSize size=rowCount partialList=true >
