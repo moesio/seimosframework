@@ -2,8 +2,8 @@ package com.seimos.commons.web.formbuilder;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import javax.persistence.MappedSuperclass;
@@ -22,7 +22,7 @@ public class Page implements Serializable {
 
 	private String title;
 
-	private List<FormField> formFields = new ArrayList<FormField>();
+	private LinkedHashMap<String, FormField> formFields = new LinkedHashMap<String, FormField>();
 
 	private Object data;
 
@@ -54,7 +54,8 @@ public class Page implements Serializable {
 				//				}
 			} else {
 				String fullPath = path.concat(".").concat(field.getName());
-				formFields.add(new FormField(entityClass, fullPath.substring(1)));
+				FormField formField = new FormField(entityClass, fullPath.substring(1));
+				formFields.put(formField.getName(), formField);
 			}
 		}
 	}
@@ -67,7 +68,7 @@ public class Page implements Serializable {
 		return entityName;
 	}
 
-	public List<FormField> getFormFields() {
+	public LinkedHashMap<String, FormField> getFormFields() {
 		return formFields;
 	}
 

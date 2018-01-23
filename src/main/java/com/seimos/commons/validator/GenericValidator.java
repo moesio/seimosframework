@@ -1,6 +1,6 @@
 package com.seimos.commons.validator;
 
-import java.util.List;
+import java.util.LinkedHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +22,7 @@ import com.seimos.commons.web.formbuilder.Page;
 public class GenericValidator<Entity> implements Validator {
 
 	protected static final Logger logger = LoggerFactory.getLogger(GenericValidator.class);
+
 	protected ReloadableResourceBundleMessageSource messageSource;
 
 	@Autowired
@@ -40,11 +41,12 @@ public class GenericValidator<Entity> implements Validator {
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	public void validate(Object target, Errors errors) {
-		List<FormField> formFields = new Page(target.getClass()).getFormFields();
+		LinkedHashMap<String, FormField> formFields = new Page(target.getClass()).getFormFields();
 
-		for (FormField formField : formFields) {
+		for (String key : formFields.keySet()) {
+			FormField formField = formFields.get(key);
 			String fieldName = formField.getName().substring(formField.getName().indexOf('.') + 1);
-			
+
 			Object fieldValue = errors.getFieldValue(fieldName);
 			if (formField.getMandatory()) {
 				String label = messageSource.getMessage(formField.getLabel(), null, null, null);

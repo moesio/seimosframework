@@ -34,7 +34,7 @@ public class PageTest {
 
 	@Test
 	public void testGetFormFields() throws NoSuchFieldException, SecurityException {
-		Object[] actual = page.getFormFields().toArray();
+		Object[] actual = page.getFormFields().values().toArray();
 		Object[] expected = new Object[] { //
 				new FormField(Foo.class, "bool"), //
 				new FormField(Foo.class, "date"), //
@@ -55,8 +55,8 @@ public class PageTest {
 				new FormField(Foo.class, "within.wany"), //
 				new FormField(Foo.class, "within.wsome"), //
 				new FormField(Foo.class, "within.wone"), //
+				new FormField(Foo.class, "within.deep.superDeep"), //
 				new FormField(Foo.class, "within.deep.another"), //
-				new FormField(Foo.class, "within.deep.superDeep"),//
 		};
 		assertArrayEquals(expected, actual);
 	}

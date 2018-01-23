@@ -63,11 +63,16 @@ import com.seimos.commons.web.formbuilder.SelectOption;
 public abstract class GenericCrudController<Domain> {
 
 	private static final Logger logger = LoggerFactory.getLogger(GenericCrudController.class);
+
 	@SuppressWarnings("unused")
 	private HashMap<Class<?>, Page> formCache = new HashMap<Class<?>, Page>();
+
 	private Class<Domain> entityClass;
+
 	private ReloadableResourceBundleMessageSource messageSource;
+
 	public Environment env;
+
 	Reflection reflection;
 
 	public abstract GenericService<Domain> getService();
@@ -192,7 +197,7 @@ public abstract class GenericCrudController<Domain> {
 			e.printStackTrace();
 		}
 
-		return "edit";
+		return "form";
 	}
 
 	/**
@@ -230,7 +235,7 @@ public abstract class GenericCrudController<Domain> {
 		if (model.asMap().get(BindingResult.MODEL_KEY_PREFIX + getEntitySimpleName()) == null) {
 			model.addAttribute(getEntitySimpleName(), entity);
 		}
-		return "edit";
+		return "form";
 	}
 
 	@RequestMapping(value = "/dataTable", method = RequestMethod.GET)

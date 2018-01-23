@@ -51,6 +51,8 @@ public class FormField implements Serializable {
 
 	private String entity;
 
+	private String view;
+
 	public enum T {
 		BOOLEAN, DATE, DETAIL, DOUBLE, ENUM, HIDDEN, INTEGER, SELECT, TEXT, UNKNOWN;
 	}
@@ -204,6 +206,14 @@ public class FormField implements Serializable {
 
 	public String getEntity() {
 		return entity;
+	}
+
+	public String getView() {
+		return view;
+	}
+
+	public void setView(String input) {
+		this.view = input;
 	}
 
 	/* (non-Javadoc)
