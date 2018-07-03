@@ -157,8 +157,8 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
 
 	private Properties getHibernateProperties() {
 		Properties hibernateProperties = new Properties();
-		hibernateProperties.setProperty(ConfigKey.hibernate_hbm2ddl_auto.toString(),
-				ConfigReader.getKey(ConfigKey.hibernate_hbm2ddl_auto));
+		//		hibernateProperties.setProperty(ConfigKey.hibernate_hbm2ddl_auto.toString(),
+		//				ConfigReader.getKey(ConfigKey.hibernate_hbm2ddl_auto));
 		hibernateProperties.setProperty(ConfigKey.hibernate_dialect.toString(),
 				ConfigReader.getKey(ConfigKey.hibernate_dialect));
 		hibernateProperties.setProperty("hibernate.connection.release_mode", "auto");

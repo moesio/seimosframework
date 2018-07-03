@@ -171,6 +171,7 @@ public class FormField implements Serializable {
 				}
 			}
 		} catch (HibernateException e) {
+			populator.put("", e.getMessage());
 			logger.warn(
 					"field populator is not necessary while validation. Cautionn if this message appears while other operations.");
 		}

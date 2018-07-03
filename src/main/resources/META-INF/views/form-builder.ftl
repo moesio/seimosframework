@@ -46,22 +46,23 @@
 	<#if domain?length gt 0>
 		<@spring.formSingleSelect "${field.name}" "${domain}"?eval "class='form-control'"/><#t>
 	<#else>
-	    	<@spring.formInput "${field.name}", "class='form-control' maxlength='${field.length!0}'"/><#t>
+	    	<@spring.formInput "${field.name}", "maxlength='${field.length!0}'"/><#t>
 	</#if>
 </#macro>
 
 <@spring.bind page.entityName />
+
 <#list page.formFields?keys as path>
 	<#assign field = page.formFields[path] />
 	<#switch "${field.type}">
 		<#case "HIDDEN">
 			<#assign view>
-				<@spring.formHiddenInput "${field.name}", "class='form-control' maxlength='${field.length!0}'"/><#t>
+				<@spring.formHiddenInput "${field.name}", "maxlength='${field.length!0}'"/><#t>
 			</#assign>
 		<#break>
 		<#case "INTEGER">
 			<#assign view>
-				<@spring.formInput "${field.name}", "class='form-control' maxlength='${field.length!0}'", "number"/><#t>
+				<@spring.formInput "${field.name}", "maxlength='${field.length!0}'", "number"/><#t>
 			</#assign>
 		<#break>
 		<#case "TEXT">
@@ -73,8 +74,9 @@
 			<#assign view>
 				<#--
 					<@selectForField field/>
+				${field.populator?is_hash?c}
 				-->
-				<@spring.formSingleSelect "${field.name}.${field.idFieldName}" field.populator "class='form-control'"/><#t>
+				<@spring.formSingleSelect "${field.name}.${field.idFieldName}" field.populator ""/><#t>
 			</#assign>
 		<#break>
 		<#case "ENUM">
@@ -89,7 +91,7 @@
 				-->
 				<@spring.bind "${field.name}"/>
 				<#assign subList = spring.status.value?default(" ")>
-				<select multiple="multiple" id="${spring.status.expression}" name="${spring.status.expression}" class='form-control'>
+				<select multiple="multiple" id="${spring.status.expression}" name="${spring.status.expression}" >
 					<#list field.populator?keys as value>
 						<#if subList?contains(value) >
 							<#assign isSelected = true>
@@ -108,7 +110,7 @@
 		<#break>
 		<#case "DATE">
 			<#assign view>
-				<@spring.formInput "${field.name}", "class='form-control' maxlength='${field.length!0}'", "date"/><#t>
+				<@spring.formInput "${field.name}", "maxlength='${field.length!0}'", "date"/><#t>
 			</#assign>
 		<#break>
 		<#case "BOOLEAN">
